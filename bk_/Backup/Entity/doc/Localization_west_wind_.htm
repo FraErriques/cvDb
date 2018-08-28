@@ -1,0 +1,1105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+
+
+<script src="Localization_west_wind__files/jquery.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+if (typeof(jQuery) == 'undefined')  
+        document.write(unescape("%3Cscript src='/Weblog/wwSC.axd?r=Westwind.Web.Controls.Resources.jquery.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<title>
+	Detecting and setting the Locale on the Current ASP.Net Web Request - Rick Strahl's Web Log
+</title><link id="ctl00_RssLink" rel="alternate" type="application/rss+xml" title="Rick Strahl's Web Log" href="http://feedproxy.google.com/rickstrahl"><meta id="ctl00_metaKeyWords" name="Keywords" content="DotNet,.Net,C#,ASP.NET,jquery,ATLAS,AJAX,Rick Strahl,HTML,CSS,JavScript,ADO.Net,West Wind Technologies,WebLog,Blog"><meta id="ctl00_metaDescription" name="Description" content="Here's a useful tip on how to switch the Locale in your Web Applications to provide proper number and date formatting for users from different countries. Detect the Locale and then switch the current request to this Locale to provide a more customized user experience."> 	
+    <style type="text/css">
+        .blogimgtag  { border:none;margin-top:5px; }
+    </style>
+    
+    <style type="text/css">    
+    .comment>a:first-child { text-decoration: none; }
+    .contenteditable { background: azure; padding: 10px; border: solid 1px orange; }
+    </style>
+
+<script src="Localization_west_wind__files/wwSC.txt" type="text/javascript"></script>
+
+<script src="Localization_west_wind__files/ShowPost.js" type="text/javascript"></script>
+
+<script src="Localization_west_wind__files/weblog.js" type="text/javascript"></script>
+<link href="Localization_west_wind__files/Standard.css" type="text/css" rel="stylesheet"></head><body>
+
+<form name="aspnetForm" method="post" action="../ShowPost.aspx?id=334" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE0MTQ5ODM1NDNkGAEFFWN0bDAwJENvbnRlbnQkQ2FwdGNoYQ8yjAIAAQAAAP////8BAAAAAAAAAAwCAAAARFdlc3R3aW5kLldlYiwgVmVyc2lvbj0xLjEwLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsBQEAAAAnV2VzdHdpbmQuV2ViLkNvbnRyb2xzLkRpc3BsYXlFeHByZXNzaW9uBwAAAA1FeHBlY3RlZFZhbHVlBlZhbHVlMQZWYWx1ZTIJT3BlcmF0aW9uAklkDFVuaXF1ZVBhZ2VJZAdFbnRlcmVkAAAAAQEBAAgICA0CAAAABQAAAAIAAAADAAAABgMAAAABKwYEAAAACDJlMzUxZTQ3BgUAAAADMzM0gMz8eVD4zEgLZKn2/BylpzQkydDhEQ5M5ldHBs/6" type="hidden">
+</div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+var scriptVars = {
+	webBasePath: "/Weblog/"
+};
+var serverVars = {
+	commentMaxLength: 4000,
+	txtBodyId: "ctl00_Content_txtBody",
+	txtAuthorId: "ctl00_Content_txtAuthor",
+	txtTitleId: "ctl00_Content_txtTitle"
+};
+function WebForm_OnSubmit() {
+var CpCtl = document.getElementById('2e351e47');
+if (CpCtl) CpCtl.value += '_2e351e47';
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWAgKAhsuzDAKv3LGSAi0HLOKZmkQGmeGkcyaUZXONjxUP" type="hidden">
+</div>
+<div class="pagemarquee"><a href="http://www.west-wind.com/">
+    <img id="ctl00_imgLogo" src="Localization_west_wind__files/wwtoollogo_text.gif" style="border-width: 0px; margin-right: 5px; margin-top: 25px;" align="right" border="0"></a>
+                          
+                          <a href="http://www.west-wind.com/Weblog/default.aspx"><img id="ctl00_WebLogLogo" src="Localization_west_wind__files/WebLogBannerLogo.jpg" alt="Rick Strahl's Web Log" style="border-width: 0px;" border="0"></a></div>
+<div class="weblogbanner">
+    <div style="float: left; color: rgb(255, 204, 0); padding-left: 8px;">Life, Surf, Code and everything in between</div>
+    <div style="color: white; float: right; padding-right: 10px;">
+            <a class="weblogbannertext" href="http://www.west-wind.com/articles.asp" title="White Papers">White Papers</a> | 
+            <a class="weblogbannertext" href="http://www.west-wind.com/DotNetTools.asp" title="Free Tools">Free Tools</a> | 
+            <a class="weblogbannertext" href="http://www.west-wind.com/pricing.asp" title="Products">Products</a> | 
+            <a class="weblogbannertext" href="http://www.west-wind.com/wwThreads/" title="Support">Message Board</a> | 
+            <a class="weblogbannertext" href="http://www.west-wind.com/westwindnews.wst" title="News">News</a> |
+     </div>
+</div>
+<!-- End Page header/banner -->
+
+
+<!-- Category List Sidebar -->
+<div id="SideBar" class="gridalternate" style="position: absolute; left: 0px; width: 170px; overflow: hidden;">
+     <div style="padding: 15px 5px 5px;">
+        <div><a id="ctl00_lnkWebLogHome" class="menulink" href="http://www.west-wind.com/weblog/default.aspx">Web Log Home</a></div>
+        <div><a id="ctl00_lnkSiteHome" class="menulink" href="http://www.west-wind.com/">Site Home</a></div>
+       
+        <div><a id="ctl00_RssHyperLink" class="menulink" href="http://feedproxy.google.com/rickstrahl" style="vertical-align: middle;"><img id="ctl00_imgRss" src="Localization_west_wind__files/rss.png" style="border: medium none; padding-right: 30px;" align="right">Subscribe to Feed</a>
+
+        <a href="http://feedproxy.google.com/rickstrahl"><img src="Localization_west_wind__files/RickStrahl.gif" style="border: 0pt none;" alt=""></a>                
+       
+        <a href="http://twitter.com/rickstrahl" target="_blank" title="RickStrahl on Twitter"><img src="Localization_west_wind__files/a.png" style="border: medium none;" alt="TwitterCounter for @RickStrahl" height="26" width="88"></a>
+       
+        
+                 
+        <div><a id="ctl00_lnkContact" class="menulink" href="http://www.west-wind.com/contact.asp">Contact</a></div>
+        <div><a id="ctl00_lnkSearch" class="menulink" href="http://www.west-wind.com/search.asp">Search</a></div>
+       
+       <div><a href="http://www.west-wind.com/Weblog/ShowPosts.aspx" class="menulink">Posts - 1141</a></div>
+<div><a href="http://www.west-wind.com/Weblog/ShowComments.aspx" class="menulink">Comments - 14846</a></div>
+   
+       </div>
+       
+        <hr>
+        <center>
+            <img id="ctl00_AuthorImage" src="Localization_west_wind__files/rick.jpg" style="border-width: 0px;"><br>
+            <a href="http://devmavens.com/" style="display: block; margin-top: 5px;"><img src="Localization_west_wind__files/DM_badge_80x15.gif" alt="" border="0"></a>            
+            <img id="ctl00_imgMVP" src="Localization_west_wind__files/msmvp.gif" style="border-width: 0px; margin-top: 3px;"><br>
+            <small>since 1997</small>     
+        </center>                    
+        
+    </div>
+    
+    <div class="gridheader">Personal Links</div>
+    <div style="padding: 5px;">
+        <div><a id="ctl00_lnkPhotoAlbum" class="menulink" href="http://www.west-wind.com/rick/photoalbum/">Photo Album</a></div>
+        <div><a id="ctl00_lnkMusic" class="menulink" href="http://www.west-wind.com/music/anti-trust">My Noise</a></div>
+        <div><a id="ctl00_lnkMessageBoard" class="menulink" href="http://www.west-wind.com/wwThreads/">Message Board</a></div>
+        <hr>
+        <center>
+        <div style="margin-bottom: 8px;">
+        <a href="http://www.west-wind.com/Weblog/donations.aspx">
+        <img src="Localization_west_wind__files/donation.gif" border="0">        
+        </a>
+        </div>  
+        
+              
+        <small style="font-size: 8pt; font-family: Arial,Sans-Serif;">        
+        Find this content useful? Consider making a small donation to show your support.
+        </small>        
+        </center>
+
+        
+    </div>
+        
+    
+    
+    <div class="gridheader">Now Reading</div>
+    <div style="padding: 5px; text-align: center; font-size: 8pt;">
+        
+<div id="divBookHighlights">    
+    
+        <div id="divBookHighlight">
+            <a href="http://www.amazon.com/ASP-Net-MVC-Action-Jeffrey-Palermo/dp/1933988622%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D1933988622" target="_blank">
+                <img src="Localization_west_wind__files/51ku2NNAMJL.jpg" border="0">
+            </a><br>
+            <small>
+            <a href="http://www.amazon.com/ASP-Net-MVC-Action-Jeffrey-Palermo/dp/1933988622%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D1933988622" target="_blank">
+                <b>ASP.Net MVC in Action</b>
+            </a>
+            <br>
+            by Jeffrey Palermo, Ben Scheirman, Jimmy Bogard</small>
+        </div>
+    
+        <div id="divBookHighlight">
+            <a href="http://www.amazon.com/Too-Big-Fail-Washington-System-/dp/0670021253%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0670021253" target="_blank">
+                <img src="Localization_west_wind__files/41Y2dXZxF1L.jpg" border="0">
+            </a><br>
+            <small>
+            <a href="http://www.amazon.com/Too-Big-Fail-Washington-System-/dp/0670021253%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0670021253" target="_blank">
+                <b>Too Big to Fail: The Inside Story of How Wall Street and Washington Fought to Save the Financial System---and Themselves</b>
+            </a>
+            <br>
+            by Andrew Ross Sorkin</small>
+        </div>
+    
+        <div id="divBookHighlight">
+            <a href="http://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0321268202" target="_blank">
+                <img src="Localization_west_wind__files/51sbuQIxz9L.htm" border="0">
+            </a><br>
+            <small>
+            <a href="http://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202%3FSubscriptionId%3D1SDRSQH20CF1ZSXE6Y02%26tag%3Dwestwindtechn-20%26linkCode%3Dsp1%26camp%3D2025%26creative%3D165953%26creativeASIN%3D0321268202" target="_blank">
+                <b>Applying Domain-Driven Design and Patterns: With Examples in C# and .NET</b>
+            </a>
+            <br>
+            by Jimmy Nilsson</small>
+        </div>
+    
+</div>
+    </div>
+     
+     <div class="gridheader" onclick="window.location = 'http://twitter.com/rickstrahl';" style="cursor: pointer;">                
+        Twitter Status
+      </div>
+         
+     <div style="padding: 5px;">
+        <div id="tweets">
+        <div style="margin: 3px 0px 5px; background: none repeat scroll 0% 0% lightblue; cursor: pointer;"><div></div><img style="margin-right: 5px;" src="Localization_west_wind__files/profile_normal.jpg" align="left"><h3>Rick Strahl</h3><img src="Localization_west_wind__files/twitter-chicklet.jpg"><br clear="all"></div><div class="twitteritem"><a href="http://www.twitter.com/ChrisLove">@ChrisLove</a> Lots of SQL Compact examples. No samples on how to get SQL Server to work. Conn strings don't seem to work.</div><div class="twitterbyline">about 26h ago</div><div class="twitteritem"><a href="http://www.twitter.com/etechpartner">@etechpartner</a> Feel the same way. I think they'll get this stuff into VS eventually. Lots of work needed tho. Lotsa holes.</div><div class="twitterbyline">about 31h ago</div><div class="twitteritem">Hmmm... how do you open a SQL Server database in Razor? Can't get a ConnectionString entry to work. Docs anywhere?</div><div class="twitterbyline">about 32h ago</div><div class="twitteritem"><a href="http://www.twitter.com/etechpartner">@etechpartner</a> Just playing around with WebMatrix to check out. Eventually you'll clearly want to do this in VS to get proper Intellisense</div><div class="twitterbyline">about 32h ago</div><div class="twitteritem"><a href="http://www.twitter.com/paulmrozowski">@paulmrozowski</a> Guessing anything else in GAC needs to be defined in web.config somehow.</div><div class="twitterbyline">about 33h ago</div></div>
+     </div>
+        
+       
+</div>
+<!-- End Category List Sidebar -->
+
+<div id="MainContent" class="contentpanel">
+     
+    <!-- google_ad_section_start -->
+    
+
+<center>
+<div class="divLQTextAd">
+<div id="lqdmad">
+<div id="lqdmrd"><a href="http://vssisdead.com/?mavens" target="_top"><img src="Localization_west_wind__files/633940882784481830.jpg" alt="Click Here" class="dmAdImg" border="0" height="90" width="120"></a><p class="dmAdText">Don't suffer with VSS any longer.  We can help TODAY.</p></div>
+<p class="dmAdText">
+    <a href="http://lakequincy.com/devmavens">Ads Via Dev<b>Mavens</b></a>
+<script type="text/javascript"> 
+<!-- 
+lqm_channel=1;
+lqm_publisher=258;
+lqm_zone=1;
+lqm_format=20;
+//-->
+</script>
+<script type="text/javascript" src="Localization_west_wind__files/s.js"></script><script type="text/javascript" src="Localization_west_wind__files/i.ashx"></script>
+    </p>
+</div>
+</div>
+</center>
+ 
+
+<div style="margin-top: 25px; margin-right: 25px;">
+<div id="ctl00_Content_FeedbackPanel">
+	
+<h2>
+    <a style="text-decoration: none;" href="http://www.west-wind.com/Weblog/posts/334.aspx">Detecting and setting the Locale on the Current ASP.Net Web Request</a>
+    
+</h2>
+<hr>
+<div class="commentcount"><a href="#Feedback">31 comments</a></div>
+<div class="byline">March 28, 2004 @ 9:10 pm</div>
+<br>
+<br>
+<div class="postcontent">
+
+<font size="2" face="Verdana">
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><i style=""><font size="2" face="Verdana">I posted about </font><a href="http://west-wind.com/weblog/posts/334.aspx"><font size="2" face="Verdana">this topic last week</font></a><font size="2"><font face="Verdana"> and after a few suggestions and considerations I’ve reworked some of the code and text in this topic . <span style="">&nbsp;</span><st1:date w:st="on" year="2004" day="10" month="04" ls="trans">04/10/2004</st1:date><o:p></o:p></font></font></i></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">I’ve been working with Kevin on a bunch of localization issues related to </font><a title="" href="http://www.oakleafsd.com/" target="_blank"><font size="2" face="Verdana">Mere Mortals Framework</font></a><font size="2" face="Verdana">
+ over the last few weeks and here is one useful tip that once again 
+demonstrates how nice and easy some things can be when using ASP. Net.</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">One
+ of the things we need to do when localizing an app is also deal with 
+the various display formats for numbers, dates etc. In .Net switching 
+this format is nothing short of trivial by simply setting the current 
+thread to a given Locale. If you’re using any of the .Net formatting 
+methods such as string.Format() .Net will take care of all of the hard 
+work for you. </font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">The basics of this is as simple as:</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><font size="2">string Lang = "de-CH";<span style="">&nbsp;&nbsp; </span>// Swiss German<o:p></o:p></font></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><font size="2">System.Threading.Thread.CurrentThread.CurrentCulture =<span style="">&nbsp; </span><o:p></o:p></font></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp; </span><span style="color: blue;">new</span> System.Globalization.CultureInfo(Lang);<o:p></o:p></font></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-size: 12pt; font-family: 'Times New Roman';"><o:p>&nbsp;</o:p></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">From
+ this point forward the current thread will use the various Locale 
+settings provided for dates, numbers separators etc. In WinForms 
+applications you can do this quite nicely by allowing a language 
+selection and setting this selection somewhere at application startup, 
+making sure that any other new threads inherit this value if they 
+generate any UI code to display.</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">You can also do this in Web Applications and it’s almost as trivial. ASP. Net’s Request object has a <i style="">UserLanguages</i>
+ collection that allows you to read the browser’s currently active 
+language. Ever wonder how Google can tell which language you’re running?
+ When you’re using a German version of IE it will automatically browse 
+to Google.de for example. Well, most modern browsers return a selection 
+of preferred languages which is exactly what the <i style="">UserLanguages</i> property returns.</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">With
+ this knowledge you can use a fairly generic routine and plug it into 
+your ASP.Net base Page subclass (you are using a Subclass aren’t 
+you???). Start by creating a generic routine in your utility library (I 
+use wwWebUtils for this):</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2"><b><span style="color: blue; font-family: 'Courier New';">public</span></b><span style="font-family: 'Courier New';"> <b><span style="color: blue;">static</span></b> <b><span style="color: blue;">void</span></b> SetUserLocale(<b><span style="color: blue;">string</span></b> CurrencySymbol) <o:p></o:p></span></font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2">{<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>HttpRequest Request = HttpContext.Current.Request;<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">if</span></b> (Request.UserLanguages == <b><span style="color: blue;">null</span></b>)<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">return</span></b>;<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><o:p><font size="2">&nbsp;</font></o:p></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">string</span></b> Lang =<span style="">&nbsp; </span>Request.UserLanguages[0];<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">if</span></b> (Lang != <b><span style="color: blue;">null</span></b>) <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">if</span></b> (Lang.Length &lt; 3) <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>Lang = Lang + <span style="background: none repeat scroll 0% 0% silver;">"-"</span> + Lang.ToUpper();<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">try</span></b> <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>System.Threading.Thread.CurrentThread.CurrentCulture =<span style="">&nbsp; </span><o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </span><b><span style="color: blue;">new</span></b> System.Globalization.CultureInfo(Lang) ; <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">if</span></b> (CurrencySymbol != <b><span style="color: blue;">null</span></b> &amp;&amp; CurrencySymbol != <span style="background: none repeat scroll 0% 0% silver;">""</span>)<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>CurrentThread.CurrentCulture.NumberFormat.CurrencySymbol = <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </span>CurrencySymbol;<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>}<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><b><span style="color: blue;">catch</span></b> <o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{;}<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>}<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><span style="font-family: 'Courier New';"><font size="2">}<o:p></o:p></font></span></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">Notice
+ that I’m using a parameter here to allow overriding the Currency 
+Symbol. In my apps though I’ve found that I often need to adjust the 
+number format but I don’t want to also format the currency symbol 
+because my application needs to still run with currency of US dollars 
+regardless of the locale used. Only if I actually perform translations 
+into other currencies would it be possible to show currency in the 
+locale native format. </font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">You
+ can call this method generically from global.asax’s BeginRequest method
+ then with the currency of your choice or null if you indeed want the 
+currency symbol to switch as well:</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><o:p><font size="2">&nbsp;</font></o:p></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><font size="2">wwWebUtils.SetUserLocale( System.Threading.Thread.CurrentThread.<o:p></o:p></font></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><font size="2"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </span>CurrentCulture.NumberFormat.CurrencySymbol );<o:p></o:p></font></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><b><span style="font-family: 'Courier New';"><o:p><font size="2">&nbsp;</font></o:p></span></b></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">(all on one line)</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">This will take the default currency symbol (ie. $ on my Web Server and associate it with the locale). If somebody from <st1:place w:st="on"><st1:country-region w:st="on">Germany</st1:country-region></st1:place>
+ now shows up they’ll see numbers represented in German number format 
+but instead of the Euro sign they’ll still see the US dollar sign.</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">That’s
+ all it takes. Note that if the browser doesn’t provide Locale info – 
+and many older versions don’t – the code continues to run in the default
+ Locale. ASP.Net assigns the default Locale to each request when it 
+starts with the default being the Locale that the Web Server is running 
+under. In my case that would be US English (en-Us).</font></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><o:p><font size="2" face="Verdana">&nbsp;</font></o:p></p>
+<p class="MsoNormal" style="margin: 0in 0in 0pt;"><font size="2" face="Verdana">This
+ is a cool feature if you think about it especially if you realize how 
+trivial the implementation for all of this is. However, the full process
+ of localizing an application is full of pitfalls… I’ll have more on 
+this stuff as I move forward.</font></p></font></div>
+<br>
+<br>
+
+<div class="comment commentauthor" style="border: 0px none; min-height: 30px;">
+    
+    <div style="float: right;">
+       <a href="http://www.west-wind.com/Weblog/Donations.aspx">
+       <img src="Localization_west_wind__files/donation.gif" style="text-decoration: none;" alt="If you find this content useful make a donation" border="0">            
+        </a>
+    </div>
+    
+    <div style="margin-top: 5px;"><a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.west-wind.com%2fweblog%2fposts%2f334.aspx&amp;title=Detecting+and+setting+the+Locale+on+the+Current+ASP.Net+Web+Request"><img src="Localization_west_wind__files/KickItImageGenerator.png" alt="kick it on DotNetKicks.com" border="0"></a></div><hr>
+</div>
+
+<br>
+
+<br>
+    
+    
+    <div class="gridheader" style="padding-top: 5px;">Feedback for this Weblog Entry</div>
+    <a name="Feedback">&nbsp;</a>    
+           
+            <div id="cmt_335" class="comment" style="min-height: 80px;">
+            <a name="335" href="#335">#</a> 
+            <b>RE: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.cerkit.com/" target="_WebLog">mearls@hotmail.com (Michael Earls)</a>
+                <span class="commenttime">March 29, 2004 @ 2:15 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                For ASP.NET, if you do not have a subclassed page class 
+(even if you do), it is probably a good idea to set the thread locale 
+from Global.asax in the BeginRequest()  method.
+<br>
+<br>Also, we've found that not all locales from the browser exist in the
+ framework, so we had to write code to try the first one in the list, 
+then try it without the locale (es-US should be U.S. Spanish, but the 
+framework only knows about Spanish), then, if we still can't get a 
+"hit", we continue through the other languages they have listed.  If we 
+can't find anything, we default to the locale of the server (en-US in 
+our case).
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_337" class="comment commentauthor" style="min-height: 80px;">
+            <a name="337" href="#337">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/weblog/" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">March 30, 2004 @ 6:11 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Michael, good points especially about BeginRequest. Duh!
+ I noticed about the Locale strings not always being available too. The 
+code actually needs an exception block to check for failures as well. 
+The code I have does check for the language only case which the browser 
+seems to use for things like de-DE (high German) for example. If I get 
+two characters only I dupe the string out to the 5 char version.
+<br>Very useful stuff all of this - great mileage for very little effort!
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_691" class="comment" style="min-height: 80px;">
+            <a name="691" href="#691">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.michaelfalconer.co.uk/" target="_WebLog">Michael Falconer</a>
+                <span class="commenttime">July 24, 2004 @ 7:48 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                I'm currently looking at implementing code like the 
+above, but have one question; if the user has a number of languages set 
+up in their browser, why limit the code to trying only the first 
+language?
+<br>
+<br>For example, if the users first language is Arabic, and you have no 
+Arabic resources, then they will see the default locale (possibly 
+English). But if their second language is Spanish, and you do offer 
+Spanish resources, it would be better to use those.
+<br>
+<br>My only difficulty so far has been in trying to discover which 
+resources are being used for each locale. It looks like you've got to 
+use the ResourceManager, but none of the code I've tried is successful.
+<br>
+<br>Any ideas on how to discover this?
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_692" class="comment commentauthor" style="min-height: 80px;">
+            <a name="692" href="#692">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/weblog/" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">July 24, 2004 @ 2:43 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Michael, The browser actually will return the user's 
+language preferences IF he has more than one configured. If you parse 
+through UserLanguages() you can get the list of languages from there.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_740" class="comment" style="min-height: 80px;">
+            <a name="740" href="#740">#</a> 
+            <b>Switching CurrentCulture in ASP.NET Pages Gotchas</b>
+            
+            <br>
+            <small> by
+                <a href="http://west-wind.com/weblog/posts/739.aspx" target="_WebLog">Rick Strahl's WebLog</a>
+                <span class="commenttime">August 13, 2004 @ 8:07 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Switching the CurrentCulture in ASP.NET is almost 
+trivial to do, but beware of some of the side effects it might have on 
+your applications.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_1485" class="comment" style="min-height: 80px;">
+            <a name="1485" href="#1485">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Scott McMaster
+                <span class="commenttime">February 14, 2005 @ 5:47 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Thanks Rick.  This whole area seems to be fraught with 
+pitfalls.  I recently ran into trouble handling the neutral cultures.  I
+ discovered that, rather than shooting for a specific culture by 
+appending an upper-cased version of the neutral letters and doing "new 
+CultureInfo()", you can be "right" more of the time by using 
+"CultureInfo.CreateSpecificCulture()", passing in the neutral 
+(two-letter) culture code as follows:
+<br>
+<br>Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture( lang );
+<br>
+<br>Look at the example output in the CreateSpecificCulture help topic to see what I mean.
+<br>
+<br>Even then, though, it looks like you have to add exception-handling 
+code for at least CHS and CHT, and somehow do a different "right" thing 
+in that case...
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_4152" class="comment" style="min-height: 80px;">
+            <a name="4152" href="#4152">#</a> 
+            <b>Hungarian Characters and DataRow String Field indexes</b>
+            
+            <br>
+            <small> by
+                <a href="http://west-wind.com/weblog/posts/4150.aspx" target="_WebLog">Rick Strahl's WebLog</a>
+                <span class="commenttime">January 10, 2006 @ 11:45 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                One more time I've run into an issue where I'm reading a
+ field from a DataRow only to find that the current Locale I'm running 
+in doesn't like the field name and fails to retrieve the field. This 
+time it's Hungarian which seems to have some odd combinations that do 
+and don't work.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_5355" class="comment" style="min-height: 80px;">
+            <a name="5355" href="#5355">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.forumsoftware.ca/" target="_WebLog">Af</a>
+                <span class="commenttime">April 27, 2006 @ 9:59 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                I am a newbie to ASP.Net. 
+<br>Can someone let me know how similar the locale in .Net is to Java's Locale implementation?
+<br>
+<br>Many thanks
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_5982" class="comment" style="min-height: 80px;">
+            <a name="5982" href="#5982">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Jean Renier
+                <span class="commenttime">June 13, 2006 @ 8:51 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                In my opininion the right place to put this code is in 
+de method InitializeCulture which you have to override in a page base 
+class.
+<br>
+<br>protected virtual void InitializeCulture()
+<br>{
+<br>    wwWebUtils.SetUserLocale( System.Threading.Thread.CurrentThread.
+                  CurrentCulture.NumberFormat.CurrencySymbol );
+<br>    base.InitializeCulture();
+<br>}
+<br>
+<br>
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_5989" class="comment commentauthor" style="min-height: 80px;">
+            <a name="5989" href="#5989">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/weblog" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">June 13, 2006 @ 1:10 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Jean - the problem is that it's part of the Page class 
+so you have to have a custom page sub class to make this happen. This is
+ reasonable, but sometimes you just don't have this available, nor do 
+you in other cases want to do this translation and doing it higher up in
+ the ASP.NET gives you better application level control.
+<br>
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_7241" class="comment" style="min-height: 80px;">
+            <a name="7241" href="#7241">#</a> 
+            <b>Getting ISO 3166-1 numeric From Culture or Region Info</b>
+            
+            <br>
+            <small> by
+                Robert
+                <span class="commenttime">September 04, 2006 @ 10:45 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hi
+<br>
+<br>How can i get the ISO 3166-1 numeric country code using .Net from either the culture or Region Info classes or some other class?
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_7328" class="comment" style="min-height: 80px;">
+            <a name="7328" href="#7328">#</a> 
+            <b>Auto Culture Mapping in ASP.NET 2.0 and Caching in ASP.NET 2.0 Pages</b>
+            
+            <br>
+            <small> by
+                <a href="http://west-wind.com/weblog/posts/7327.aspx" target="_WebLog">Rick Strahl's WebLog</a>
+                <span class="commenttime">September 09, 2006 @ 6:32 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                I ran into some issues today dealing with caching in a 
+localized page. Apparently caching - even with VaryByParm based on the 
+culture - doesn't quite work correctly to get caching to work correctly 
+with culture specific mapping.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_3321" class="comment" style="min-height: 80px;">
+            <a name="3321" href="#3321">#</a> 
+            <b>
+	DataRows, String Indexes and case sensitivity with Turkish Locale - Rick Strahl's Web Log
+</b>
+            
+            <br>
+            <small> by
+                <a href="http://west-wind.com/weblog/posts/2204.aspx" target="_WebLog">Rick Strahl's Web Log</a>
+                <span class="commenttime">September 28, 2006 @ 7:13 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_8553" class="comment" style="min-height: 80px;">
+            <a name="8553" href="#8553">#</a> 
+            <b>ASP.NET Forums - Is it possible to get the remoute client OS  version ?</b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/thread/760707.aspx" target="_WebLog">Web Forms</a>
+                <span class="commenttime">November 02, 2006 @ 6:34 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_9161" class="comment" style="min-height: 80px;">
+            <a name="9161" href="#9161">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Floyd
+                <span class="commenttime">November 23, 2006 @ 10:58 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hi,<br>I've tried the aproach mentioned in the article 
+and it works fine, except that when i try to export the data to excel, i
+ get numbers that have the decimal seperator of the locale setting but 
+not the thousands separator(i am using the locale setting as german).for
+ eg, i am able to view a report with data 18.600,23 but when i expot to 
+excel i get 18600,23.<br>What could be the problem.<br>Thanks,<br>Floyd
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_9667" class="comment" style="min-height: 80px;">
+            <a name="9667" href="#9667">#</a> 
+            <b>ASP.NET Forums - Messagebox Button? in .net 2005 </b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/thread/1329108.aspx" target="_WebLog">Visual Studio 2005</a>
+                <span class="commenttime">December 14, 2006 @ 4:47 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_10605" class="comment" style="min-height: 80px;">
+            <a name="10605" href="#10605">#</a> 
+            <b>ASP.NET Forums - Render Existing site in multiple languages</b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/thread/1558982.aspx" target="_WebLog">Localization</a>
+                <span class="commenttime">February 07, 2007 @ 11:41 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_74164" class="comment" style="min-height: 80px;">
+            <a name="74164" href="#74164">#</a> 
+            <b>
+	Is it possible to get the remoute client OS version ? - ASP.NET Forums
+</b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/p/760707/760707.aspx#760707" target="_WebLog">ASP.NET Forums</a>
+                <span class="commenttime">May 18, 2007 @ 6:20 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_79164" class="comment" style="min-height: 80px;">
+            <a name="79164" href="#79164">#</a> 
+            <b>
+	Messagebox Button? in .net 2005 - ASP.NET Forums
+</b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/t/1004272.aspx" target="_WebLog">ASP.NET Forums</a>
+                <span class="commenttime">May 25, 2007 @ 3:21 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_86871" class="comment" style="min-height: 80px;">
+            <a name="86871" href="#86871">#</a> 
+            <b>
+	Render Existing site in multiple languages - ASP.NET Forums
+</b>
+            
+            <br>
+            <small> by
+                <a href="http://forums.asp.net/p/1070156/1558982.aspx" target="_WebLog">ASP.NET Forums</a>
+                <span class="commenttime">June 05, 2007 @ 4:23 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_92216" class="comment" style="min-height: 80px;">
+            <a name="92216" href="#92216">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Doru
+                <span class="commenttime">June 13, 2007 @ 6:53 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hi,<br><br>Is it possible to read the client regional settings using an asp.net page?<br>One
+ of the users have a modified setting in the Regional Options, he's 
+using English(US), but Digit Grouping Symbol is not ",", he has changed 
+to " ". I need to get this value from the client and to set the numeric 
+format on the screen.<br><br>Thanks,<br><br>Doru
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_178890" class="comment" style="min-height: 80px;">
+            <a name="178890" href="#178890">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                mswin
+                <span class="commenttime">October 30, 2007 @ 1:39 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hi,<br>  How to get the user language setting from web service.<br>If the web service is invoked directly from the webservice, I am able to get the Request headers of the request object.<br>But if the same web service is invoked from aspx page using javascript, the request headers are null.<br><br>Regards
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_236950" class="comment" style="min-height: 80px;">
+            <a name="236950" href="#236950">#</a> <img src="Localization_west_wind__files/avatar.gif" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://oalexandrino.com/" target="_WebLog">Olavo Alexandrino</a>
+                <span class="commenttime">January 24, 2008 @ 12:21 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hello!<br><br>First congrats for the article.<br><br>So, I could implement successfully the localization and internalization for my personal web site.<br><br>I used the following way to do it.<br><br>By the first time, if there is no default locale I set "pt-BR" as default automatically.<br><br>If somebody who's accessing the site want, he/she can change to us-US.<br><br>The point is that by setting the locale up automatically, it's avoiding the site to be indexed by google search, for instance.<br><br>What
+ would be the first point (o better) on the ASP.NET page's cycle life 
+that I can use "HttpContext.Current.Request" and set the locale up 
+according to user's browser?<br><br>thanks!
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_236954" class="comment commentauthor" style="min-height: 80px;">
+            <a name="236954" href="#236954">#</a> <img src="Localization_west_wind__files/avatar.jpg" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/weblog" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">January 24, 2008 @ 12:25 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                HttpApplication.BeginRequest is the first point of entry and you can set the locale there.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_612129" class="comment" style="min-height: 80px;">
+            <a name="612129" href="#612129">#</a> <img src="Localization_west_wind__files/avatar_002.gif" style="opacity: 0.75;" align="right" hspace="4">
+            <b>get client regional setting date format</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.speedstep.de/" target="_WebLog">ram</a>
+                <span class="commenttime">January 30, 2009 @ 2:37 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                hi,<br><br>  how to get client system regional setting date format instead of browser date format. Any idea about that?<br><br>Thanks in advance.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_670304" class="comment commentauthor" style="min-height: 80px;">
+            <a name="670304" href="#670304">#</a> <img src="Localization_west_wind__files/avatar.jpg" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">March 18, 2009 @ 2:53 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                @Ram - you can't get the regional setting of the client 
+system unless you ask for it. However, why would you need that? If the 
+browser is running in a specific language, wouldn't you want to respect 
+that?
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_754110" class="comment" style="min-height: 80px;">
+            <a name="754110" href="#754110">#</a> <img src="Localization_west_wind__files/avatar_004.gif" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Raghavendra
+                <span class="commenttime">May 04, 2009 @ 11:24 pm</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Hi,<br><br>I am using Sharepoint 2007 with C# and 
+javascript for clientside validation. I want to know on the client side 
+what is the Date format in the regional settings for the current page.<br><br>Ex
+ : If it is Hindi in the regional settings for the page in current site ,
+ then i want the information to be fetched in javascript as "dd-mm-yyyy"
+ , if it is en-UK then "mm/dd/yyyy" and so on.<br><br>Please let me know how i can get this information in the javascript file that i use for validation
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_754464" class="comment commentauthor" style="min-height: 80px;">
+            <a name="754464" href="#754464">#</a> <img src="Localization_west_wind__files/avatar.jpg" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                <a href="http://www.west-wind.com/" target="_WebLog">Rick Strahl</a>
+                <span class="commenttime">May 05, 2009 @ 3:13 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                @Raghavendra - the client side has no direct API for 
+formatting dates so anything you do will either require code or some 
+library. I think the closest thing you're likely to find is datejs: <a href="http://www.datejs.com/2007/11/27/getting-started-with-datejs/">http://www.datejs.com/2007/11/27/getting-started-with-datejs/</a>, but even it requires that you load a script library for a specific locale when the page loads.<br><br>Another
+ way that you can do this if you are dealing with isolated dates is: 
+Render the dates on the server and embed them into the page as strings 
+(&lt;%= %&gt; tags or embedded JavaScript), or use an AJAX callback to 
+format the dates dynamically as needed. This is fine as long as you 
+don't have tons of dates (like in a list/grid type display).
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_33299" class="comment" style="min-height: 80px;">
+            <a name="33299" href="#33299">#</a> <img src="Localization_west_wind__files/avatar_005.gif" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Daniel
+                <span class="commenttime">October 08, 2009 @ 11:10 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                It is possible in a web application, detect the user's regional settings?<br><br>I think it's possible detect the regional settings of the server host, but, i need detect the user's, to format an csv file.<br><br>Thank you<br><br>Daniel
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_394974" class="comment" style="min-height: 80px;">
+            <a name="394974" href="#394974">#</a> <img src="Localization_west_wind__files/avatar_003.gif" style="opacity: 0.75;" align="right" hspace="4">
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Tim
+                <span class="commenttime">April 01, 2010 @ 8:12 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                Still very useful six years later.<br><br>Thanks for the post... it was exactly what i needed.
+                </div>
+                
+                
+            </small>
+            </div>
+               
+            <div id="cmt_653719" class="comment" style="min-height: 80px;">
+            <a name="653719" href="#653719">#</a> 
+            <b>re: Detecting and setting the Locale on the Current ASP.Net Web Request</b>
+            
+            <br>
+            <small> by
+                Ron
+                <span class="commenttime">June 24, 2010 @ 11:59 am</span>
+                
+                <div class="commentbody" style="padding-top: 20px;">
+                A very helpful article.. thanks!<br>I have a website where I need to check the user's browser setting and redirect them to a different URL. <br><br>I tried doing this in global.asax Session_Start method, but having problems with google's indexing.<br><br>When
+ I try with Application_BeginRequest, every resource request(images, 
+css, etc) goes through this method and seems to affect the css. Whats 
+the best way to acheive this? <br><br>Any solutions? Thanks again!
+                </div>
+                
+                
+            </small>
+            </div>
+        
+
+</div>
+
+<span id="ctl00_Content_ErrorDisplay"></span>
+
+&nbsp;<input name="ctl00$Content$btnShowCommentTable" value="Add a Comment" id="ctl00_Content_btnShowCommentTable" type="submit"><div id="ContentOverlay" style="background: none repeat scroll 0% 0% steelblue;"></div>
+<center>
+
+</center>
+
+    
+    
+    
+     
+    
+    
+
+    
+<br>
+</div>
+<!--
+
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
+             xmlns:dc="http://purl.org/dc/elements/1.1/"
+
+             xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+
+<rdf:Description
+
+    rdf:about="http://www.west-wind.com/weblog/posts/334.aspx"
+
+    dc:identifier="http://www.west-wind.com/weblog/posts/334.aspx"
+
+    dc:title="Detecting and setting the Locale on the Current ASP.Net Web Request"
+
+    trackback:ping="http://www.west-wind.com/weblog/posts/334.aspx?Trackback=True" />
+
+</rdf:RDF>
+
+-->    
+
+    <!-- google_ad_section_end -->
+
+    <!-- Page footer -->
+    <p>
+    </p><hr>
+    <a href="http://www.west-wind.com/"><img id="ctl00_Image1" alt="West Wind" src="Localization_west_wind__files/wwtoollogo_text.gif" style="border-width: 0px;" align="right" border="0"></a>
+    &nbsp;<small>© Rick Strahl, West Wind Technologies, 2005 - 2010</small>
+    <br clear="all">
+    <p>&nbsp;</p>
+    <!-- End Page footer -->
+</div>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+var Proxy = { 
+    FormatComment: function (inputText,completed,errorHandler)
+    {
+        var _cb = Proxy_GetProxy();
+        _cb.callMethod("FormatComment",[inputText],completed,errorHandler);
+        return _cb;           
+    },
+    DeleteComment: function (id,completed,errorHandler)
+    {
+        var _cb = Proxy_GetProxy();
+        _cb.callMethod("DeleteComment",[id],completed,errorHandler);
+        return _cb;           
+    },
+    GetCommentText: function (id,completed,errorHandler)
+    {
+        var _cb = Proxy_GetProxy();
+        _cb.callMethod("GetCommentText",[id],completed,errorHandler);
+        return _cb;           
+    },
+    UpdateCommentText: function (id,html,completed,errorHandler)
+    {
+        var _cb = Proxy_GetProxy();
+        _cb.callMethod("UpdateCommentText",[id,html],completed,errorHandler);
+        return _cb;           
+    }
+}
+function Proxy_GetProxy() {
+    var _cb = new AjaxMethodCallback('Proxy','/Weblog/WebLogCallbacks.ashx',
+                                    { timeout: 20000,
+                                      postbackMode: 'PostMethodParametersOnly',
+                                      formName: '' 
+                                    });
+    return _cb;
+}
+//]]>
+</script>
+</form>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="Localization_west_wind__files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-9492219-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body></html>

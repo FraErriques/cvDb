@@ -1,0 +1,12 @@
+
+Riemann\Suze
+"Database=cv_db;
+Server=Riemann\SUZE;
+User=applicationuser;
+Password=curricula;
+
+Riemann\Suze
+"Database=cv_db;
+Server=Riemann\SUZE;
+User=sa;
+Password=sa;

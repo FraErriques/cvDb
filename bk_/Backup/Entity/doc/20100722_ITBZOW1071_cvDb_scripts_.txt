@@ -1,0 +1,1245 @@
+USE [master]
+GO
+/****** Oggetto:  Database [cv_db]    Data script: 07/22/2010 17:38:39 ******/
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'cv_db')
+BEGIN
+CREATE DATABASE [cv_db] ON  PRIMARY 
+( NAME = N'cv_db', FILENAME = N'Z:\root\dataSql\dat\cv_db.mdf' , SIZE = 40128KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'cv_db_log', FILENAME = N'Z:\root\dataSql\log\cv_db_log.LDF' , SIZE = 1024KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
+ COLLATE Latin1_General_CS_AS_WS
+END
+
+GO
+EXEC dbo.sp_dbcmptlevel @dbname=N'cv_db', @new_cmptlevel=90
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [cv_db].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [cv_db] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [cv_db] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [cv_db] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [cv_db] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [cv_db] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [cv_db] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [cv_db] SET AUTO_CREATE_STATISTICS ON 
+GO
+ALTER DATABASE [cv_db] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [cv_db] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [cv_db] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [cv_db] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [cv_db] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [cv_db] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [cv_db] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [cv_db] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [cv_db] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [cv_db] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [cv_db] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [cv_db] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [cv_db] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [cv_db] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [cv_db] SET  READ_WRITE 
+GO
+ALTER DATABASE [cv_db] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [cv_db] SET  MULTI_USER 
+GO
+ALTER DATABASE [cv_db] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [cv_db] SET DB_CHAINING OFF 
+USE [cv_db]
+GO
+/****** Oggetto:  User [applicationuser]    Data script: 07/22/2010 17:38:42 ******/
+GO
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'applicationuser')
+CREATE USER [applicationuser] FOR LOGIN [applicationuser] WITH DEFAULT_SCHEMA=[dbo]
+GO
+/****** Oggetto:  Table [dbo].[utente]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[utente]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[utente](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[username] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[password] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[kkey] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[mode] [char](1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL DEFAULT ('m'),
+ CONSTRAINT [pk_utente_idonly] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[username] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[settoreCandidatura_LOOKUP]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[settoreCandidatura_LOOKUP]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[settoreCandidatura_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeSettore] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+ CONSTRAINT [pk_settoreCandidatura] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_candidato_LOAD]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_candidato_LOAD]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_candidato_LOAD]
+@where_tail varchar(5500)
+as
+declare @code varchar(5500)
+if @where_tail is NULL
+BEGIN
+	select @where_tail = ''''
+END -- else it''s already a valid tail.
+select @code =
+	''
+	select
+		c.id
+		,c.nominativo
+		,s.nomeSettore
+		,c.note
+	from 
+		candidato c
+		,settoreCandidatura_LOOKUP s
+	where c.id_settore=s.id
+	''
++ @where_tail
+exec( @code)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_SEARCH_CandidateDocuments]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_SEARCH_CandidateDocuments]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+CREATE procedure [dbo].[usp_doc_multi_SEARCH_CandidateDocuments]
+	@id_set varchar( 6000)
+as
+-- NB. example of how to build this parameter from the application layer:
+--declare @id_set varchar( 6000)
+--select @id_set = '' (1,2,3)''
+
+declare @query_mainPart varchar( 400)
+select @query_mainPart =
+''select 
+		dm.id,
+		c.nominativo as candidato,
+		dm.abstract
+	from
+		[dbo].[doc_multi] dm,
+		[dbo].[candidato]  c ''
+	+'' where 
+		abstract <> ''''_##__fake_abstract__##_''''
+		and dm.ref_candidato_id = c.id ''
+	--print @query_mainPart
+-- decide whether to add an ending part
+declare @wholeQuery varchar( 7000)
+if( @id_set is not null )
+	begin
+		select @wholeQuery = @query_mainPart 
+		+ '' and dm.id in '' + @id_set 
+		+ '' order by abstract''
+		--print @wholeQuery
+	end
+else
+	begin
+		select @wholeQuery = @query_mainPart + '' order by abstract''
+		--print @wholeQuery
+	end
+-- ready
+exec (@wholeQuery)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_permesso_INSERT]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_permesso_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+create procedure [dbo].[usp_permesso_INSERT]
+	@id_utente int,
+	@id_permissionLevel int,
+	@id_settore int
+as
+insert into permesso(
+	[id_utente],
+	[id_permissionLevel],
+	[id_settore]
+   ) values(
+		@id_utente,
+		@id_permissionLevel,
+		@id_settore 
+	)
+' 
+END
+GO
+/****** Oggetto:  Table [dbo].[areaAziendale_LOOKUP]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[areaAziendale_LOOKUP]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[areaAziendale_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeArea] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+ CONSTRAINT [pk_areaAziendale] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[livelloFunzionario_LOOKUP]    Data script: 07/22/2010 17:38:42 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[livelloFunzionario_LOOKUP]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[livelloFunzionario_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeLivello] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[permissionLevel] [int] NOT NULL,
+ CONSTRAINT [pk_livelloFunzionario_LOOKUP] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_generic_LOAD_interval]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_generic_LOAD_interval]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_ViewCacher_generic_LOAD_interval]
+@min int
+,@max int
+,@view_signature varchar(500)
+as
+declare @cmd varchar(5500)--NB. no error check. On wrong name, throws.
+--
+select @cmd = '' select * from ''
++ @view_signature
++ '' where RowNumber between  ''
++ str( @min)
++ '' and ''
++ str( @max)
+--
+exec( @cmd)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_generic_LOAD_length]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_generic_LOAD_length]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_ViewCacher_generic_LOAD_length]
+@view_signature varchar(500)
+as
+declare @cmd varchar(1500)
+select @cmd =
+	''select count(*) from '' --NB. [] required around numeric-beginning names.
+	+ @view_signature
+exec( @cmd)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[LogViewer_web_cvDb]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[LogViewer_web_cvDb]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[LogViewer_web_cvDb]
+	@startDate varchar(14),
+	@endDate varchar(14)
+as
+select
+	--[when] as full_timestamp,
+	substring([when], 1,4) as [anno],
+	case
+		when substring([when], 5,2)=1 then ''Gennaio''
+		when substring([when], 5,2)=2 then ''Febbraio''
+		when substring([when], 5,2)=3 then ''Marzo''
+		when substring([when], 5,2)=4 then ''Aprile''
+		when substring([when], 5,2)=5 then ''Maggio''
+		when substring([when], 5,2)=6 then ''Giugno''
+		when substring([when], 5,2)=7 then ''Luglio''
+		when substring([when], 5,2)=8 then ''Agosto''
+		when substring([when], 5,2)=9 then ''Settembre''
+		when substring([when], 5,2)=10 then ''Ottobre''
+		when substring([when], 5,2)=11 then ''Novembre''
+		when substring([when], 5,2)=12 then ''Dicembre''
+		else ''Invalid Month''
+	end   as month_name,
+	--substring([when], 5,2) as [mese], if you want month-ordinal instead of month-name.
+	substring([when], 7,2) as [giorno],
+	substring([when], 9,2)+'':''+substring([when], 11,2) as [ora_minuto],
+	substring([when],13,2) as [secondo],
+	function_name as procedure_called,
+	content	as [message],
+	-- campi tecnici per il debug su server
+	row_nature,
+	stack_depth
+from
+	[Logging].[dbo].[cv_db] --hard to let it a parameter; the whole query should become a string of dynamic sql.
+where 
+	convert(datetime,substring([when],1,8))>=convert(datetime,@startDate)
+	and convert(datetime,substring([when],1,8))<=convert(datetime,@endDate)
+	--and row_nature=''t''
+order by [when] desc
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_generic_DROP]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_generic_DROP]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_ViewCacher_generic_DROP]
+@view_signature varchar(500)
+as
+declare @cmd varchar(5500)--NB. no error check. On wrong name, throws.
+select @cmd = '' drop view '' + @view_signature
+exec( @cmd)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_candidato]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_specific_CREATE_candidato]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_ViewCacher_specific_CREATE_candidato]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''''
+			END -- else it''s already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( ''---NB. @view_signature ----- must be specified and non-empty.''
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			''
+				create view '' 
+				+ Ltrim(Rtrim( @view_signature))
+				+'' as
+						SELECT
+							ROW_NUMBER() OVER (ORDER BY c.nominativo asc) AS ''''RowNumber''''
+							,c.id
+							,c.nominativo
+							,s.nomeSettore
+							,c.note
+				from
+					candidato c
+					,settoreCandidatura_LOOKUP s
+				where c.id_settore=s.id ''
+				+ @where_tail
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_documento]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_specific_CREATE_documento]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_ViewCacher_specific_CREATE_documento]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''''
+			END -- else it''s already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( ''---NB. @view_signature ----- must be specified and non-empty.''
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			''
+				create view '' 
+				+ Ltrim(Rtrim( @view_signature))
+				+'' as
+					select 
+						ROW_NUMBER() OVER (ORDER BY dm.sourceName asc) AS ''''RowNumber''''
+						,dm.id 
+						,sett.nomeSettore
+						,dm.abstract
+						,dm.sourceName
+						,dm.insertion_time
+					from 
+						doc_multi dm
+						, candidato c
+						, settoreCandidatura_LOOKUP sett
+					where 
+						abstract<>''''_##__fake_abstract__##_''''
+						and c.id=dm.ref_candidato_id
+						and sett.id = c.id_settore ''
+						+ @where_tail  -- ref_candidato_id = @ref_candidato_id
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+
+
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_Primes]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_ViewCacher_specific_CREATE_Primes]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_ViewCacher_specific_CREATE_Primes]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''''
+			END -- else it''s already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( ''---NB. @view_signature ----- must be specified and non-empty.''
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			''
+				create view '' 
+				+ Ltrim(Rtrim( @view_signature))
+				+'' as
+					select 
+						ROW_NUMBER() OVER (ORDER BY p.ordinal asc) AS ''''RowNumber''''
+						, ordinal
+						, prime  
+					from 
+						[PrimeData].[dbo].[Prime_sequence]  p  ''
+						+ @where_tail  -- where	p.ordinal  between  min and  max
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+' 
+END
+GO
+/****** Oggetto:  Table [dbo].[permesso]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[permesso]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[permesso](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[id_utente] [int] NOT NULL,
+	[id_permissionLevel] [int] NOT NULL,
+	[id_settore] [int] NULL,
+ CONSTRAINT [pk_permesso] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[lCrash]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[lCrash]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[lCrash](
+	[id] [int] NOT NULL,
+	[card] [int] NOT NULL DEFAULT ((0)),
+ CONSTRAINT [pk_lCrash] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[candidato]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[candidato]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[candidato](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nominativo] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[id_settore] [int] NOT NULL,
+	[note] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+ CONSTRAINT [pk_candidato] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[doc_multi]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[doc_multi]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[doc_multi](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[ref_job_id] [int] NOT NULL DEFAULT ((0)),
+	[ref_candidato_id] [int] NOT NULL,
+	[abstract] [varchar](5500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[sourceName] [varchar](350) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[doc] [image] NULL,
+	[insertion_time] [datetime] NULL DEFAULT (getdate()),
+ CONSTRAINT [pk_doc_multi] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+/****** Oggetto:  Table [dbo].[settoreAziendale_LOOKUP]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[settoreAziendale_LOOKUP]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[settoreAziendale_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeSettore] [varchar](150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[id_area] [int] NOT NULL,
+ CONSTRAINT [pk_settoreAziendale] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_ChangePwd]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_ChangePwd]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create   procedure [dbo].[usp_utente_ChangePwd]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey     varchar(150),
+	@mode     char(1)
+as
+UPDATE utente
+SET
+		password=@password,
+		kkey=@kkey,
+		mode=@mode
+WHERE
+	username=@username
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_permesso_LOADSINGLE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_permesso_LOADSINGLE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_permesso_LOADSINGLE]
+	@username varchar(50)
+as
+--
+--
+--
+-- datatable utente
+select ut.id id_utente, ut.username
+from utente ut
+	where ut.username = @username
+--
+-- datatable permesso
+select  perm.id_permissionLevel, lev.permissionLevel, lev.nomeLivello
+from  permesso perm, livelloFunzionario_LOOKUP lev
+where lev.id=perm.id_permissionLevel
+and perm.id_utente=(select id from utente where username=@username)
+--
+-- datatable settore
+select  sett.id id_settore, sett.nomeSettore
+from utente ut, settoreAziendale_LOOKUP sett, permesso perm
+	where sett.id=isnull( perm.id_settore, 0)
+	and perm.id_utente = ut.id
+	and ut.username = @username
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_permesso_GetNonCensiti]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_permesso_GetNonCensiti]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_permesso_GetNonCensiti]
+as	
+--resultset utente
+	select * from [dbo].[utente]
+	where id not in( select id_utente from permesso)
+
+--resultset permesso
+select
+	u.username,
+	l.nomeLivello,
+	s.nomeSettore
+ from
+	[permesso] p,
+	[livelloFunzionario_LOOKUP] l,
+	[utente] u,
+	[settoreAziendale_LOOKUP] s
+where 
+	p.id_utente=u.id
+	and l.id=p.id_permissionLevel
+	and s.id= isnull(p.id_settore, 25)
+order by nomeSettore
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_INSERT]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE   procedure [dbo].[usp_utente_INSERT]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey     varchar(150),
+	@mode     char(1)
+as
+insert into utente(
+--id
+[username],
+[password],
+[kkey],
+[mode]
+       ) values(
+--id
+@username,
+@password,
+@kkey,
+@mode
+)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_LOADDECODEDSINGLE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_LOADDECODEDSINGLE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE  procedure [dbo].[usp_utente_LOADDECODEDSINGLE]
+	@id int
+as
+	select
+		username
+	from utente
+	where id=@id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_LOADMULTI]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_LOADMULTI]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE  procedure [dbo].[usp_utente_LOADMULTI]
+as
+select
+		[id],[username]
+	from utente
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_LOADSINGLE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_LOADSINGLE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+CREATE  procedure [dbo].[usp_utente_LOADSINGLE]
+	@username varchar(50)
+as
+	select
+		*
+	from utente
+	where username=@username
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_utente_UPDATE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_utente_UPDATE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE  procedure [dbo].[usp_utente_UPDATE]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey varchar(150),
+	@mode char(1)
+as
+	update utente
+	set
+		[password]=@password,
+		[kkey]=@kkey,
+		[mode]=@mode
+	where username=@username
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_getId_at_refCandidatoId]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_getId_at_refCandidatoId]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_doc_multi_getId_at_refCandidatoId]
+	@ref_candidato_id int
+as
+select 
+	dm.id 
+	,sett.nomeSettore
+	,dm.abstract
+	,dm.sourceName
+	,dm.insertion_time
+from 
+	doc_multi dm
+	, candidato c
+	, settoreCandidatura_LOOKUP sett
+where 
+	ref_candidato_id = @ref_candidato_id
+	and abstract<>''_##__fake_abstract__##_''
+	and c.id=dm.ref_candidato_id
+	and sett.id = c.id_settore
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_settoreCandidatura_LOOKUP_LOAD]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_settoreCandidatura_LOOKUP_LOAD]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+CREATE procedure [dbo].[usp_settoreCandidatura_LOOKUP_LOAD]
+as
+select * from [dbo].[settoreCandidatura_LOOKUP]
+order by nomeSettore asc
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_settoreCandidatura_LOOKUP_INSERT]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_settoreCandidatura_LOOKUP_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_settoreCandidatura_LOOKUP_INSERT]
+@nomeSettore varchar(150)
+as
+insert into [settoreCandidatura_LOOKUP](
+-- id
+nomeSettore
+	) values(
+@nomeSettore
+)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_candidato_LOAD_Description]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_candidato_LOAD_Description]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+create procedure [dbo].[usp_candidato_LOAD_Description]
+	@id int
+as
+select 
+	c.nominativo
+	,s.nomeSettore
+from 
+	candidato c
+	,settoreCandidatura_LOOKUP s
+where
+	c.id = @id
+	and s.id = c.id_settore
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_candidato_note_UPDATE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_candidato_note_UPDATE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+create procedure [dbo].[usp_candidato_note_UPDATE]
+@id int,
+@note text
+as
+	update
+		[candidato]
+	set
+		[note]=@note
+	where id = @id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_candidato_INSERT]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_candidato_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+create procedure [dbo].[usp_candidato_INSERT]
+	-- id
+	@nominativo varchar(150)
+	,@id_settore int
+	,@note text
+as
+insert into candidato(
+	-- id
+	nominativo
+	,id_settore
+	,note
+)values(
+	-- id
+	@nominativo
+	,@id_settore
+	,@note
+)
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_candidato_note_LOAD]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_candidato_note_LOAD]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+
+create procedure [dbo].[usp_candidato_note_LOAD]
+@id int
+as
+select
+	[note]
+from
+	candidato
+where id = @id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_INSERT]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_doc_multi_INSERT]
+	@ref_job_id int,---------NB. must be specified and !=0, on Append.------------------------
+	@ref_candidato_id int,
+	@_abstract varchar(5500),
+	@sourceName varchar(350),
+	@doc image,
+	-- out
+	@result int out -- output the generated id_identity.---------
+as
+	begin transaction
+	begin try
+		if @ref_job_id<0--preserve zero, for the first_insert.----
+			begin
+			    -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( ''---NB. @ref_job_id ----- must be specified and >=0. Zero on first_insert, positive on Append.'',
+						   16, -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   1 -- State.
+						   );
+			end--end if @ref_job_id<=0 else can continue.
+		insert into doc_multi(
+			--id identity
+			ref_job_id,
+			ref_candidato_id,
+			abstract,
+			sourceName,
+			doc
+				) values(
+				--id identity,
+				@ref_job_id,------------NB. must be specified end !=0, on Append.---------
+				@ref_candidato_id,--it''s a foreign key: cannot be an invalid pointer.------------
+				@_abstract,-----last chunk will be the only one equipped with. The semantic engine must find last chunk''s id.
+				@sourceName,--every chunk.----
+				@doc
+		)
+		-- now retrieve the "id_identity" just created, to use it as ref_job_id in successive chunks.
+		select @result = (select max(id) from doc_multi)
+		-- if you get here, you can commit.
+		commit transaction
+	end try
+	begin catch
+		rollback transaction
+		select @result=-1 --error code
+	end catch
+	-- ready
+	return @result
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_dataMining]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_dataMining]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE procedure [dbo].[usp_doc_multi_dataMining]
+	@id_last_phase int
+as
+	-- returns a datatable of ids, from last_chunk(in first row) to first_chunk(ref_job_id=0 in last row).--
+	declare @ref_job_id int
+	set @ref_job_id = @id_last_phase
+	--
+	select @ref_job_id -- NB. don''t forget the last chunk.
+	--
+	while( @ref_job_id>0)
+		begin
+			-----------finalizzata a memorizzare la sequenza dei puntatori a chunk.-----------
+			select ref_job_id from doc_multi where id=@ref_job_id
+			-----
+			-----------stessa query di prima, con nuovo parametro,----------------------------
+			-----------per far avanzare il ciclo while al chunk successivo--------------------
+			select @ref_job_id = (select ref_job_id from doc_multi where id=@ref_job_id)
+			-----
+		end
+	--ready
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_get_sourceName]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_get_sourceName]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_doc_multi_get_sourceName]
+	@id int
+as
+select sourceName from doc_multi where id=@id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_getBlobAtId]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_getBlobAtId]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_doc_multi_getBlobAtId]
+	@id_required_phase int
+as
+	-- returns a datatable of all columns, at id=@id_required_phase.
+	select * from doc_multi where id=@id_required_phase
+	--ready
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_abstract_LOAD]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_abstract_LOAD]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_doc_multi_abstract_LOAD]
+@id int
+as
+select
+	[abstract]
+from
+	[doc_multi]
+where id = @id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_doc_multi_abstract_UPDATE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_doc_multi_abstract_UPDATE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+CREATE procedure [dbo].[usp_doc_multi_abstract_UPDATE]
+@id int,
+@_abstract varchar(5500)
+as
+	update
+		[doc_multi]
+	set
+		[abstract]=@_abstract
+	where id = @id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_lCrash_CheckLine]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_lCrash_CheckLine]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_lCrash_CheckLine]
+	@id int
+as
+	declare @res int
+	select @res = (select count(id) from [dbo].[lCrash]	where id=@id)
+	return @res
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_lCrash_INSERT]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_lCrash_INSERT]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'
+CREATE procedure [dbo].[usp_lCrash_INSERT]
+	@id int,
+	@card int
+as
+	if @card is not null
+	begin
+		insert into [dbo].[lCrash](
+			id,
+			card
+			) values(
+				@id,
+				@card
+			)
+	end
+	else
+	begin
+		insert into [dbo].[lCrash](
+			id
+			) values(
+				@id
+				-- card defaults to zero
+			)
+	end
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_lCrash_LOADSINGLE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_lCrash_LOADSINGLE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_lCrash_LOADSINGLE]
+	@id int
+as
+	select card from lCrash
+	where id=@id
+' 
+END
+GO
+/****** Oggetto:  StoredProcedure [dbo].[usp_lCrash_UPDATE]    Data script: 07/22/2010 17:38:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_lCrash_UPDATE]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'create procedure [dbo].[usp_lCrash_UPDATE]
+	@id int,
+	@card int
+as
+	update  [dbo].[lCrash]
+		set card=@card
+	where id=@id
+' 
+END
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_permessoPermissionLevel]') AND parent_object_id = OBJECT_ID(N'[dbo].[permesso]'))
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoPermissionLevel] FOREIGN KEY([id_permissionLevel])
+REFERENCES [dbo].[livelloFunzionario_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoPermissionLevel]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_permessoSettore]') AND parent_object_id = OBJECT_ID(N'[dbo].[permesso]'))
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoSettore] FOREIGN KEY([id_settore])
+REFERENCES [dbo].[settoreAziendale_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoSettore]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_permessoUtente]') AND parent_object_id = OBJECT_ID(N'[dbo].[permesso]'))
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoUtente] FOREIGN KEY([id_utente])
+REFERENCES [dbo].[utente] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoUtente]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_lCrash]') AND parent_object_id = OBJECT_ID(N'[dbo].[lCrash]'))
+ALTER TABLE [dbo].[lCrash]  WITH CHECK ADD  CONSTRAINT [fk_lCrash] FOREIGN KEY([id])
+REFERENCES [dbo].[utente] ([id])
+GO
+ALTER TABLE [dbo].[lCrash] CHECK CONSTRAINT [fk_lCrash]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_candidato_settore]') AND parent_object_id = OBJECT_ID(N'[dbo].[candidato]'))
+ALTER TABLE [dbo].[candidato]  WITH CHECK ADD  CONSTRAINT [fk_candidato_settore] FOREIGN KEY([id_settore])
+REFERENCES [dbo].[settoreCandidatura_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[candidato] CHECK CONSTRAINT [fk_candidato_settore]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_doc_multi_candidato]') AND parent_object_id = OBJECT_ID(N'[dbo].[doc_multi]'))
+ALTER TABLE [dbo].[doc_multi]  WITH CHECK ADD  CONSTRAINT [fk_doc_multi_candidato] FOREIGN KEY([ref_candidato_id])
+REFERENCES [dbo].[candidato] ([id])
+GO
+ALTER TABLE [dbo].[doc_multi] CHECK CONSTRAINT [fk_doc_multi_candidato]
+GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[fk_settoreAziendale]') AND parent_object_id = OBJECT_ID(N'[dbo].[settoreAziendale_LOOKUP]'))
+ALTER TABLE [dbo].[settoreAziendale_LOOKUP]  WITH CHECK ADD  CONSTRAINT [fk_settoreAziendale] FOREIGN KEY([id_area])
+REFERENCES [dbo].[areaAziendale_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[settoreAziendale_LOOKUP] CHECK CONSTRAINT [fk_settoreAziendale]

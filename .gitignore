@@ -1,0 +1,25 @@
+
+#let's start with directories
+bin/
+Bin/
+obj/
+Debug/
+Release/
+.vs/
+
+
+#let's continue with file cathegories
+*.o
+*.a
+*.exe
+*.dll
+*.pdb
+*.cache
+*.CopyComplete
+*.FileListAbsolute*
+*.json
+*.cahe
+*.props
+*.targets
+
+
