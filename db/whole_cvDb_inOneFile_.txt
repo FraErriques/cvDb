@@ -1,0 +1,1126 @@
+USE [master]
+GO
+/****** Object:  Database [cv_db]    Script Date: 08/29/2018 15:08:56 ******/
+CREATE DATABASE [cv_db] ON  PRIMARY 
+( NAME = N'cv_db', FILENAME = N'D:\root\dataSql\dat\cv_db.mdf' , SIZE = 1223872KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'cv_db_log', FILENAME = N'D:\root\dataSql\log\cv_db.ldf' , SIZE = 6912KB , MAXSIZE = UNLIMITED, FILEGROWTH = 10%)
+GO
+ALTER DATABASE [cv_db] SET COMPATIBILITY_LEVEL = 90
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [cv_db].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [cv_db] SET ANSI_NULL_DEFAULT OFF
+GO
+ALTER DATABASE [cv_db] SET ANSI_NULLS OFF
+GO
+ALTER DATABASE [cv_db] SET ANSI_PADDING OFF
+GO
+ALTER DATABASE [cv_db] SET ANSI_WARNINGS OFF
+GO
+ALTER DATABASE [cv_db] SET ARITHABORT OFF
+GO
+ALTER DATABASE [cv_db] SET AUTO_CLOSE ON
+GO
+ALTER DATABASE [cv_db] SET AUTO_CREATE_STATISTICS ON
+GO
+ALTER DATABASE [cv_db] SET AUTO_SHRINK OFF
+GO
+ALTER DATABASE [cv_db] SET AUTO_UPDATE_STATISTICS ON
+GO
+ALTER DATABASE [cv_db] SET CURSOR_CLOSE_ON_COMMIT OFF
+GO
+ALTER DATABASE [cv_db] SET CURSOR_DEFAULT  GLOBAL
+GO
+ALTER DATABASE [cv_db] SET CONCAT_NULL_YIELDS_NULL OFF
+GO
+ALTER DATABASE [cv_db] SET NUMERIC_ROUNDABORT OFF
+GO
+ALTER DATABASE [cv_db] SET QUOTED_IDENTIFIER OFF
+GO
+ALTER DATABASE [cv_db] SET RECURSIVE_TRIGGERS OFF
+GO
+ALTER DATABASE [cv_db] SET  DISABLE_BROKER
+GO
+ALTER DATABASE [cv_db] SET AUTO_UPDATE_STATISTICS_ASYNC OFF
+GO
+ALTER DATABASE [cv_db] SET DATE_CORRELATION_OPTIMIZATION OFF
+GO
+ALTER DATABASE [cv_db] SET TRUSTWORTHY OFF
+GO
+ALTER DATABASE [cv_db] SET ALLOW_SNAPSHOT_ISOLATION OFF
+GO
+ALTER DATABASE [cv_db] SET PARAMETERIZATION SIMPLE
+GO
+ALTER DATABASE [cv_db] SET READ_COMMITTED_SNAPSHOT OFF
+GO
+ALTER DATABASE [cv_db] SET HONOR_BROKER_PRIORITY OFF
+GO
+ALTER DATABASE [cv_db] SET  READ_WRITE
+GO
+ALTER DATABASE [cv_db] SET RECOVERY SIMPLE
+GO
+ALTER DATABASE [cv_db] SET  MULTI_USER
+GO
+ALTER DATABASE [cv_db] SET PAGE_VERIFY CHECKSUM
+GO
+ALTER DATABASE [cv_db] SET DB_CHAINING OFF
+GO
+USE [cv_db]
+GO
+/****** Object:  User [applicationuser]    Script Date: 08/29/2018 15:08:56 ******/
+CREATE USER [applicationuser] FOR LOGIN [applicationuser] WITH DEFAULT_SCHEMA=[dbo]
+GO
+/****** Object:  Table [dbo].[settoreCandidatura_LOOKUP]    Script Date: 08/29/2018 15:08:56 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[settoreCandidatura_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeSettore] [varchar](150) NOT NULL,
+ CONSTRAINT [pk_settoreCandidatura] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[livelloFunzionario_LOOKUP]    Script Date: 08/29/2018 15:08:56 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[livelloFunzionario_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeLivello] [varchar](150) NOT NULL,
+	[permissionLevel] [int] NOT NULL,
+ CONSTRAINT [pk_livelloFunzionario_LOOKUP] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_SEARCH_CandidateDocuments]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_doc_multi_SEARCH_CandidateDocuments]
+	@id_set varchar( 6000)
+as
+-- NB. example of how to build this parameter from the application layer:
+--declare @id_set varchar( 6000)
+--select @id_set = ' (1,2,3)'
+
+declare @query_mainPart varchar( 400)
+select @query_mainPart =
+'select 
+		dm.id,
+		c.nominativo as candidato,
+		dm.abstract
+	from
+		[dbo].[doc_multi] dm,
+		[dbo].[candidato]  c '
+	+' where 
+		abstract <> ''_##__fake_abstract__##_''
+		and dm.ref_candidato_id = c.id '
+	--print @query_mainPart
+-- decide whether to add an ending part
+declare @wholeQuery varchar( 7000)
+if( @id_set is not null )
+	begin
+		select @wholeQuery = @query_mainPart 
+		+ ' and dm.id in ' + @id_set 
+		+ ' order by abstract'
+		--print @wholeQuery
+	end
+else
+	begin
+		select @wholeQuery = @query_mainPart + ' order by abstract'
+		--print @wholeQuery
+	end
+-- ready
+exec (@wholeQuery)
+GO
+/****** Object:  Table [dbo].[areaAziendale_LOOKUP]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[areaAziendale_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeArea] [varchar](150) NOT NULL,
+ CONSTRAINT [pk_areaAziendale] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_LOAD]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_candidato_LOAD]
+@where_tail varchar(5500)
+as
+declare @code varchar(5500)
+if @where_tail is NULL
+BEGIN
+	select @where_tail = ''
+END -- else it's already a valid tail.
+select @code =
+	'
+	select
+		c.id
+		,c.nominativo
+		,s.nomeSettore
+		,c.note
+	from 
+		candidato c
+		,settoreCandidatura_LOOKUP s
+	where c.id_settore=s.id
+	'
++ @where_tail
+exec( @code)
+GO
+/****** Object:  Table [dbo].[utente]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[utente](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[username] [varchar](50) NOT NULL,
+	[password] [varchar](50) NOT NULL,
+	[kkey] [varchar](150) NULL,
+	[mode] [char](1) NOT NULL,
+ CONSTRAINT [pk_utente_idonly] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[username] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_Primes]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_ViewCacher_specific_CREATE_Primes]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''
+			END -- else it's already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( '---NB. @view_signature ----- must be specified and non-empty.'
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			'
+				create view ' 
+				+ Ltrim(Rtrim( @view_signature))
+				+' as
+					select 
+						ROW_NUMBER() OVER (ORDER BY p.ordinal asc) AS ''RowNumber''
+						, ordinal
+						, prime  
+					from 
+						[PrimeData].[dbo].[Prime_sequence]  p  '
+						+ @where_tail  -- where	p.ordinal  between  min and  max
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_documento]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_ViewCacher_specific_CREATE_documento]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''
+			END -- else it's already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( '---NB. @view_signature ----- must be specified and non-empty.'
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			'
+				create view ' 
+				+ Ltrim(Rtrim( @view_signature))
+				+' as
+					select 
+						ROW_NUMBER() OVER (ORDER BY dm.sourceName asc) AS ''RowNumber''
+						,dm.id 
+						,sett.nomeSettore
+						,dm.abstract
+						,dm.sourceName
+						,dm.insertion_time
+					from 
+						doc_multi dm
+						, candidato c
+						, settoreCandidatura_LOOKUP sett
+					where 
+						abstract<>''_##__fake_abstract__##_''
+						and c.id=dm.ref_candidato_id
+						and sett.id = c.id_settore '
+						+ @where_tail  -- ref_candidato_id = @ref_candidato_id
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_specific_CREATE_candidato]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_ViewCacher_specific_CREATE_candidato]
+	@where_tail varchar(1500)
+	,@view_signature varchar(500)
+as
+declare @q varchar(7900)
+	begin transaction
+		begin try
+			if @where_tail is NULL
+			BEGIN
+				select @where_tail = ''
+			END -- else it's already a valid tail.
+			--
+			if @view_signature is NULL or Ltrim(Rtrim( @view_signature))=''
+			begin
+				-- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( '---NB. @view_signature ----- must be specified and non-empty.'
+						   ,16 -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   ,1 -- State.
+						   );
+			end--end if @view_signature is NULL else can continue.
+-------------------------------------------------------------------------
+			select @q =
+			'
+				create view ' 
+				+ Ltrim(Rtrim( @view_signature))
+				+' as
+						SELECT
+							ROW_NUMBER() OVER (ORDER BY c.nominativo asc) AS ''RowNumber''
+							,c.id
+							,c.nominativo
+							,s.nomeSettore
+							,c.note
+				from
+					candidato c
+					,settoreCandidatura_LOOKUP s
+				where c.id_settore=s.id '
+				+ @where_tail
+			exec( @q )
+			-- if you get here, you can commit.
+			commit transaction
+	end try
+	begin catch
+		rollback transaction
+	end catch
+	-- ready
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_generic_LOAD_length]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_ViewCacher_generic_LOAD_length]
+@view_signature varchar(500)
+as
+declare @cmd varchar(1500)
+select @cmd =
+	'select count(*) from ' --NB. [] required around numeric-beginning names.
+	+ @view_signature
+exec( @cmd)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_generic_LOAD_interval]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_ViewCacher_generic_LOAD_interval]
+@min int
+,@max int
+,@view_signature varchar(500)
+as
+declare @cmd varchar(5500)--NB. no error check. On wrong name, throws.
+--
+select @cmd = ' select * from '
++ @view_signature
++ ' where RowNumber between  '
++ str( @min)
++ ' and '
++ str( @max)
+--
+exec( @cmd)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ViewCacher_generic_DROP]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_ViewCacher_generic_DROP]
+@view_signature varchar(500)
+as
+declare @cmd varchar(5500)--NB. no error check. On wrong name, throws.
+select @cmd = ' drop view ' + @view_signature
+exec( @cmd)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_UPDATE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  procedure [dbo].[usp_utente_UPDATE]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey varchar(150),
+	@mode char(1)
+as
+	update utente
+	set
+		[password]=@password,
+		[kkey]=@kkey,
+		[mode]=@mode
+	where username=@username
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_LOADSINGLE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  procedure [dbo].[usp_utente_LOADSINGLE]
+	@username varchar(50)
+as
+	select
+		*
+	from utente
+	where username=@username
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_LOADMULTI]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  procedure [dbo].[usp_utente_LOADMULTI]
+as
+select
+		[id],[username]
+	from utente
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_LOADDECODEDSINGLE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE  procedure [dbo].[usp_utente_LOADDECODEDSINGLE]
+	@id int
+as
+	select
+		username
+	from utente
+	where id=@id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   procedure [dbo].[usp_utente_INSERT]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey     varchar(150),
+	@mode     char(1)
+as
+insert into utente(
+--id
+[username],
+[password],
+[kkey],
+[mode]
+       ) values(
+--id
+@username,
+@password,
+@kkey,
+@mode
+)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_utente_ChangePwd]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create   procedure [dbo].[usp_utente_ChangePwd]
+	@username varchar(50),
+	@password varchar(50),
+	@kkey     varchar(150),
+	@mode     char(1)
+as
+UPDATE utente
+SET
+		password=@password,
+		kkey=@kkey,
+		mode=@mode
+WHERE
+	username=@username
+GO
+/****** Object:  StoredProcedure [dbo].[usp_settoreCandidatura_LOOKUP_LOAD]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+CREATE procedure [dbo].[usp_settoreCandidatura_LOOKUP_LOAD]
+as
+select * from [dbo].[settoreCandidatura_LOOKUP]
+order by nomeSettore asc
+GO
+/****** Object:  StoredProcedure [dbo].[usp_settoreCandidatura_LOOKUP_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_settoreCandidatura_LOOKUP_INSERT]
+@nomeSettore varchar(150)
+as
+insert into [settoreCandidatura_LOOKUP](
+-- id
+nomeSettore
+	) values(
+@nomeSettore
+)
+GO
+/****** Object:  StoredProcedure [dbo].[LogViewer_web_cvDb]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[LogViewer_web_cvDb]
+	@startDate varchar(14),
+	@endDate varchar(14)
+as
+select
+	--[when] as full_timestamp,
+	substring([when], 1,4) as [anno],
+	case
+		when substring([when], 5,2)=1 then 'Gennaio'
+		when substring([when], 5,2)=2 then 'Febbraio'
+		when substring([when], 5,2)=3 then 'Marzo'
+		when substring([when], 5,2)=4 then 'Aprile'
+		when substring([when], 5,2)=5 then 'Maggio'
+		when substring([when], 5,2)=6 then 'Giugno'
+		when substring([when], 5,2)=7 then 'Luglio'
+		when substring([when], 5,2)=8 then 'Agosto'
+		when substring([when], 5,2)=9 then 'Settembre'
+		when substring([when], 5,2)=10 then 'Ottobre'
+		when substring([when], 5,2)=11 then 'Novembre'
+		when substring([when], 5,2)=12 then 'Dicembre'
+		else 'Invalid Month'
+	end   as month_name,
+	--substring([when], 5,2) as [mese], if you want month-ordinal instead of month-name.
+	substring([when], 7,2) as [giorno],
+	substring([when], 9,2)+':'+substring([when], 11,2) as [ora_minuto],
+	substring([when],13,2) as [secondo],
+	function_name as procedure_called,
+	content	as [message],
+	-- campi tecnici per il debug su server
+	row_nature,
+	stack_depth
+from
+	[Logging].[dbo].[cv_db] --hard to let it a parameter; the whole query should become a string of dynamic sql.
+where 
+	convert(datetime,substring([when],1,8))>=convert(datetime,@startDate)
+	and convert(datetime,substring([when],1,8))<=convert(datetime,@endDate)
+	--and row_nature='t'
+order by [when] desc
+GO
+/****** Object:  Table [dbo].[lCrash]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[lCrash](
+	[id] [int] NOT NULL,
+	[card] [int] NOT NULL,
+ CONSTRAINT [pk_lCrash] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[candidato]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING OFF
+GO
+CREATE TABLE [dbo].[candidato](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nominativo] [varchar](150) NOT NULL,
+	[id_settore] [int] NOT NULL,
+	[note] [text] NULL,
+ CONSTRAINT [pk_candidato] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[settoreAziendale_LOOKUP]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[settoreAziendale_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeSettore] [varchar](150) NOT NULL,
+	[id_area] [int] NOT NULL,
+ CONSTRAINT [pk_settoreAziendale] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  StoredProcedure [dbo].[usp_lCrash_UPDATE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_lCrash_UPDATE]
+	@id int,
+	@card int
+as
+	update  [dbo].[lCrash]
+		set card=@card
+	where id=@id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_lCrash_LOADSINGLE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_lCrash_LOADSINGLE]
+	@id int
+as
+	select card from lCrash
+	where id=@id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_lCrash_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_lCrash_INSERT]
+	@id int,
+	@card int
+as
+	if @card is not null
+	begin
+		insert into [dbo].[lCrash](
+			id,
+			card
+			) values(
+				@id,
+				@card
+			)
+	end
+	else
+	begin
+		insert into [dbo].[lCrash](
+			id
+			) values(
+				@id
+				-- card defaults to zero
+			)
+	end
+GO
+/****** Object:  StoredProcedure [dbo].[usp_lCrash_CheckLine]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_lCrash_CheckLine]
+	@id int
+as
+	declare @res int
+	select @res = (select count(id) from [dbo].[lCrash]	where id=@id)
+	return @res
+GO
+/****** Object:  Table [dbo].[permesso]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[permesso](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[id_utente] [int] NOT NULL,
+	[id_permissionLevel] [int] NOT NULL,
+	[id_settore] [int] NULL,
+ CONSTRAINT [pk_permesso] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[doc_multi]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING OFF
+GO
+CREATE TABLE [dbo].[doc_multi](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[ref_job_id] [int] NOT NULL,
+	[ref_candidato_id] [int] NOT NULL,
+	[abstract] [varchar](5500) NOT NULL,
+	[sourceName] [varchar](350) NOT NULL,
+	[doc] [image] NULL,
+	[insertion_time] [datetime] NULL,
+ CONSTRAINT [pk_doc_multi] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_candidato_INSERT]
+	-- id
+	@nominativo varchar(150)
+	,@id_settore int
+	,@note text
+as
+insert into candidato(
+	-- id
+	nominativo
+	,id_settore
+	,note
+)values(
+	-- id
+	@nominativo
+	,@id_settore
+	,@note
+)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_LOAD_Description]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_candidato_LOAD_Description]
+	@id int
+as
+select 
+	c.nominativo
+	,s.nomeSettore
+from 
+	candidato c
+	,settoreCandidatura_LOOKUP s
+where
+	c.id = @id
+	and s.id = c.id_settore
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_note_UPDATE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_candidato_note_UPDATE]
+@id int,
+@note text
+as
+	update
+		[candidato]
+	set
+		[note]=@note
+	where id = @id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_note_LOAD]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_candidato_note_LOAD]
+@id int
+as
+select
+	[note]
+from
+	candidato
+where id = @id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_permesso_LOADSINGLE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_permesso_LOADSINGLE]
+	@username varchar(50)
+as
+--
+--
+--
+-- datatable utente
+select ut.id id_utente, ut.username
+from utente ut
+	where ut.username = @username
+--
+-- datatable permesso
+select  perm.id_permissionLevel, lev.permissionLevel, lev.nomeLivello
+from  permesso perm, livelloFunzionario_LOOKUP lev
+where lev.id=perm.id_permissionLevel
+and perm.id_utente=(select id from utente where username=@username)
+--
+-- datatable settore
+select  sett.id id_settore, sett.nomeSettore
+from utente ut, settoreAziendale_LOOKUP sett, permesso perm
+	where sett.id=isnull( perm.id_settore, 0)
+	and perm.id_utente = ut.id
+	and ut.username = @username
+GO
+/****** Object:  StoredProcedure [dbo].[usp_permesso_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_permesso_INSERT]
+	@id_utente int,
+	@id_permissionLevel int,
+	@id_settore int
+as
+insert into permesso(
+	[id_utente],
+	[id_permissionLevel],
+	[id_settore]
+   ) values(
+		@id_utente,
+		@id_permissionLevel,
+		@id_settore 
+	)
+GO
+/****** Object:  StoredProcedure [dbo].[usp_permesso_GetNonCensiti]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_permesso_GetNonCensiti]
+as	
+--resultset utente
+	select * from [dbo].[utente]
+	where id not in( select id_utente from permesso)
+
+--resultset permesso
+select
+	u.username,
+	l.nomeLivello,
+	s.nomeSettore
+ from
+	[permesso] p,
+	[livelloFunzionario_LOOKUP] l,
+	[utente] u,
+	[settoreAziendale_LOOKUP] s
+where 
+	p.id_utente=u.id
+	and l.id=p.id_permissionLevel
+	and s.id= isnull(p.id_settore, 25)
+order by nomeSettore
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_INSERT]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_doc_multi_INSERT]
+	@ref_job_id int,---------NB. must be specified and !=0, on Append.------------------------
+	@ref_candidato_id int,
+	@_abstract varchar(5500),
+	@sourceName varchar(350),
+	@doc image,
+	-- out
+	@result int out -- output the generated id_identity.---------
+as
+	begin transaction
+	begin try
+		if @ref_job_id<0--preserve zero, for the first_insert.----
+			begin
+			    -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+				RAISERROR( '---NB. @ref_job_id ----- must be specified and >=0. Zero on first_insert, positive on Append.',
+						   16, -- Severity. -- RAISERROR with severity 11-19 will cause exeuction to jump to the CATCH block.
+						   1 -- State.
+						   );
+			end--end if @ref_job_id<=0 else can continue.
+		insert into doc_multi(
+			--id identity
+			ref_job_id,
+			ref_candidato_id,
+			abstract,
+			sourceName,
+			doc
+				) values(
+				--id identity,
+				@ref_job_id,------------NB. must be specified end !=0, on Append.---------
+				@ref_candidato_id,--it's a foreign key: cannot be an invalid pointer.------------
+				@_abstract,-----last chunk will be the only one equipped with. The semantic engine must find last chunk's id.
+				@sourceName,--every chunk.----
+				@doc
+		)
+		-- now retrieve the "id_identity" just created, to use it as ref_job_id in successive chunks.
+		select @result = (select max(id) from doc_multi)
+		-- if you get here, you can commit.
+		commit transaction
+	end try
+	begin catch
+		rollback transaction
+		select @result=-1 --error code
+	end catch
+	-- ready
+	return @result
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_getId_at_refCandidatoId]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_doc_multi_getId_at_refCandidatoId]
+	@ref_candidato_id int
+as
+select 
+	dm.id 
+	,sett.nomeSettore
+	,dm.abstract
+	,dm.sourceName
+	,dm.insertion_time
+from 
+	doc_multi dm
+	, candidato c
+	, settoreCandidatura_LOOKUP sett
+where 
+	ref_candidato_id = @ref_candidato_id
+	and abstract<>'_##__fake_abstract__##_'
+	and c.id=dm.ref_candidato_id
+	and sett.id = c.id_settore
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_getBlobAtId]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_doc_multi_getBlobAtId]
+	@id_required_phase int
+as
+	-- returns a datatable of all columns, at id=@id_required_phase.
+	select * from doc_multi where id=@id_required_phase
+	--ready
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_get_sourceName]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_doc_multi_get_sourceName]
+	@id int
+as
+select sourceName from doc_multi where id=@id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_dataMining]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_doc_multi_dataMining]
+	@id_last_phase int
+as
+	-- returns a datatable of ids, from last_chunk(in first row) to first_chunk(ref_job_id=0 in last row).--
+	declare @ref_job_id int
+	set @ref_job_id = @id_last_phase
+	--
+	select @ref_job_id -- NB. don't forget the last chunk.
+	--
+	while( @ref_job_id>0)
+		begin
+			-----------finalizzata a memorizzare la sequenza dei puntatori a chunk.-----------
+			select ref_job_id from doc_multi where id=@ref_job_id
+			-----
+			-----------stessa query di prima, con nuovo parametro,----------------------------
+			-----------per far avanzare il ciclo while al chunk successivo--------------------
+			select @ref_job_id = (select ref_job_id from doc_multi where id=@ref_job_id)
+			-----
+		end
+	--ready
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_abstract_UPDATE]    Script Date: 08/29/2018 15:08:58 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[usp_doc_multi_abstract_UPDATE]
+@id int,
+@_abstract varchar(5500)
+as
+	update
+		[doc_multi]
+	set
+		[abstract]=@_abstract
+	where id = @id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_doc_multi_abstract_LOAD]    Script Date: 08/29/2018 15:08:59 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_doc_multi_abstract_LOAD]
+@id int
+as
+select
+	[abstract]
+from
+	[doc_multi]
+where id = @id
+GO
+/****** Object:  StoredProcedure [dbo].[usp_candidato_LOAD_search]    Script Date: 08/29/2018 15:08:59 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create procedure [dbo].[usp_candidato_LOAD_search]
+as
+select
+	dm.id as doc
+	,c.id as candidato
+	, c.nominativo
+	, dm.abstract
+	, dm.insertion_time
+from
+	doc_multi	dm
+	, candidato c
+where 
+	abstract <> '_##__fake_abstract__##_'
+	and dm.ref_candidato_id = c.id
+order by
+	insertion_time desc
+GO
+/****** Object:  Default [DF__utente__mode__0425A276]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[utente] ADD  DEFAULT ('m') FOR [mode]
+GO
+/****** Object:  Default [DF__lCrash__card__44FF419A]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[lCrash] ADD  DEFAULT ((0)) FOR [card]
+GO
+/****** Object:  Default [DF__doc_multi__ref_j__34C8D9D1]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[doc_multi] ADD  DEFAULT ((0)) FOR [ref_job_id]
+GO
+/****** Object:  Default [DF__doc_multi__inser__35BCFE0A]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[doc_multi] ADD  DEFAULT (getdate()) FOR [insertion_time]
+GO
+/****** Object:  ForeignKey [fk_lCrash]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[lCrash]  WITH CHECK ADD  CONSTRAINT [fk_lCrash] FOREIGN KEY([id])
+REFERENCES [dbo].[utente] ([id])
+GO
+ALTER TABLE [dbo].[lCrash] CHECK CONSTRAINT [fk_lCrash]
+GO
+/****** Object:  ForeignKey [fk_candidato_settore]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[candidato]  WITH CHECK ADD  CONSTRAINT [fk_candidato_settore] FOREIGN KEY([id_settore])
+REFERENCES [dbo].[settoreCandidatura_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[candidato] CHECK CONSTRAINT [fk_candidato_settore]
+GO
+/****** Object:  ForeignKey [fk_settoreAziendale]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[settoreAziendale_LOOKUP]  WITH CHECK ADD  CONSTRAINT [fk_settoreAziendale] FOREIGN KEY([id_area])
+REFERENCES [dbo].[areaAziendale_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[settoreAziendale_LOOKUP] CHECK CONSTRAINT [fk_settoreAziendale]
+GO
+/****** Object:  ForeignKey [fk_permessoPermissionLevel]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoPermissionLevel] FOREIGN KEY([id_permissionLevel])
+REFERENCES [dbo].[livelloFunzionario_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoPermissionLevel]
+GO
+/****** Object:  ForeignKey [fk_permessoSettore]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoSettore] FOREIGN KEY([id_settore])
+REFERENCES [dbo].[settoreAziendale_LOOKUP] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoSettore]
+GO
+/****** Object:  ForeignKey [fk_permessoUtente]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[permesso]  WITH CHECK ADD  CONSTRAINT [fk_permessoUtente] FOREIGN KEY([id_utente])
+REFERENCES [dbo].[utente] ([id])
+GO
+ALTER TABLE [dbo].[permesso] CHECK CONSTRAINT [fk_permessoUtente]
+GO
+/****** Object:  ForeignKey [fk_doc_multi_candidato]    Script Date: 08/29/2018 15:08:58 ******/
+ALTER TABLE [dbo].[doc_multi]  WITH CHECK ADD  CONSTRAINT [fk_doc_multi_candidato] FOREIGN KEY([ref_candidato_id])
+REFERENCES [dbo].[candidato] ([id])
+GO
+ALTER TABLE [dbo].[doc_multi] CHECK CONSTRAINT [fk_doc_multi_candidato]
+GO

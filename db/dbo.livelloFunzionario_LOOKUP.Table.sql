@@ -1,0 +1,21 @@
+USE [cv_db]
+GO
+/****** Object:  Table [dbo].[livelloFunzionario_LOOKUP]    Script Date: 08/29/2018 15:01:59 ******/
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[livelloFunzionario_LOOKUP](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[nomeLivello] [varchar](150) NOT NULL,
+	[permissionLevel] [int] NOT NULL,
+ CONSTRAINT [pk_livelloFunzionario_LOOKUP] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
