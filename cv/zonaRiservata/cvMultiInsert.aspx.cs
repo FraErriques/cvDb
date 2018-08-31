@@ -185,9 +185,12 @@ public partial class zonaRiservata_cvMultiInsert : System.Web.UI.Page
         string fileName_only = System.IO.Path.GetFileName(this.uploadFile.PostedFile.FileName);
         uploadElement.client_path = this.uploadFile.PostedFile.FileName;
         //
-        //--- NB. it's different for every user, included ASPNETusr ---------
-        //string serverPath = Environment.GetEnvironmentVariable("tmp", EnvironmentVariableTarget.User);
-        string serverPath = @"D:\root\LogSinkFs\cv";
+        ConfigurationLayer.ConfigurationService cs = new
+            ConfigurationLayer.ConfigurationService("FileTransferTempPath/fullpath");
+        string serverPath = cs.GetStringValue("path");
+        //-Gestione dismessa perchè scrive in directory di sistema-- NB. it's different for every user, included ASPNETusr ---------
+        //-Gestione dismessa perchè scrive in directory di sistema-string serverPath = Environment.GetEnvironmentVariable("tmp", EnvironmentVariableTarget.User);
+        //-Gestione dismessa perchè va corretta a mano per ogni macchina string serverPath = @"C:\root\LogSinkFs\cv";// TODO adapt to the server file sysetm.
         // add ending part.
         serverPath += "\\upload";
         //

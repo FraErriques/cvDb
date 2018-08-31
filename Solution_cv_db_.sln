@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{A8FD6DFC-3C34-4DB1-85E3-FB1BAA74A691}"
 EndProject
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Process", "Process\Process.
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "cv", "cv\", "{E8D32D73-9B5C-4D8A-A89C-533AC56F00A1}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv2.0"
 		ProjectReferences = "{a8fd6dfc-3c34-4db1-85e3-fb1baa74a691}|Common.dll;{1e055241-3b57-4d0f-8e24-3f2278c59993}|Entity.dll;{56176f4f-d105-4c38-8a77-369c57bcb956}|Process.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/Bin"
 		Debug.AspNetCompiler.PhysicalPath = "cv\"
@@ -33,7 +33,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "cv", "cv\", "{E8D32D73-9B5C
 		SlnRelativePath = "cv\"
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{4C1D890E-2F22-4415-95ED-58E7313EAE40}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E055241-3B57-4D0F-8E24-3F2278C59993} = {1E055241-3B57-4D0F-8E24-3F2278C59993}
+		{56176F4F-D105-4C38-8A77-369C57BCB956} = {56176F4F-D105-4C38-8A77-369C57BCB956}
+		{A8FD6DFC-3C34-4DB1-85E3-FB1BAA74A691} = {A8FD6DFC-3C34-4DB1-85E3-FB1BAA74A691}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,18 +106,18 @@ Global
 		{E8D32D73-9B5C-4D8A-A89C-533AC56F00A1}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{E8D32D73-9B5C-4D8A-A89C-533AC56F00A1}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{E8D32D73-9B5C-4D8A-A89C-533AC56F00A1}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|.NET.ActiveCfg = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|.NET.Build.0 = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|.NET.ActiveCfg = Release|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|.NET.Build.0 = Release|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{DE95A1DF-B5D5-4383-B37B-7C2A27FCC92C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|.NET.Build.0 = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|.NET.ActiveCfg = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|.NET.Build.0 = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4C1D890E-2F22-4415-95ED-58E7313EAE40}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -555,9 +555,13 @@ namespace Entity.BusinessEntities
                     {// invalid id.
                         return -1;
                     }// else can continue.
-                    //--- NB. it's different for every user, included ASPNETusr ---------
-                    //string dlgSave_InitialDirectory = Environment.GetEnvironmentVariable("tmp", EnvironmentVariableTarget.User);
-                    string dlgSave_InitialDirectory = @"D:\root\LogSinkFs\cv";
+                    //
+                    ConfigurationLayer.ConfigurationService cs = new
+                        ConfigurationLayer.ConfigurationService("FileTransferTempPath/fullpath");
+                    string dlgSave_InitialDirectory = cs.GetStringValue("path");
+                    //-Gestione dismessa --- NB. it's different for every user, included ASPNETusr ---------
+                    //-Gestione dismessa string dlgSave_InitialDirectory = Environment.GetEnvironmentVariable("tmp", EnvironmentVariableTarget.User);
+                    //-Gestione dismessa string dlgSave_InitialDirectory = @"C:\root\LogSinkFs\cv";// TODO adapt to the server file sysetm.
                     dlgSave_InitialDirectory += "\\download";// from server to client.
                     //
                     // Ensure the folder exists

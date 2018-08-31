@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1E055241-3B57-4D0F-8E24-3F2278C59993}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Entity</RootNamespace>
+    <AssemblyName>Entity</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessEntities\DocumentazioneCandidato_.cs" />
+    <Compile Include="BusinessEntities\Doc_multi.cs" />
+    <Compile Include="BusinessEntities\Permesso.cs" />
+    <Compile Include="BusinessEntities\Uploader_from_path_.cs" />
+    <Compile Include="BusinessEntities\Utente.cs" />
+    <Compile Include="FormatConverters\CharConversion.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxies\LogViewer_web_cvDb_SERVICE.cs" />
+    <Compile Include="Proxies\usp_candidato_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_candidato_LOAD_Description_SERVICE.cs" />
+    <Compile Include="Proxies\usp_candidato_LOAD_SERVICE.cs" />
+    <Compile Include="Proxies\usp_candidato_note_LOAD_SERVICE.cs" />
+    <Compile Include="Proxies\usp_candidato_note_UPDATE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_abstract_LOAD_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_abstract_UPDATE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_dataMining_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_getBlobAtId_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_getId_at_refCandidatoId_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_get_sourceName_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_doc_multi_SEARCH_CandidateDocuments_SERVICE.cs" />
+    <Compile Include="Proxies\usp_lCrash_CheckLine_SERVICE.cs" />
+    <Compile Include="Proxies\usp_lCrash_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_lCrash_LOADSINGLE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_lCrash_UPDATE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_permesso_GetNonCensiti_SERVICE.cs" />
+    <Compile Include="Proxies\usp_permesso_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_permesso_LOADSINGLE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_settoreCandidatura_LOOKUP_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_settoreCandidatura_LOOKUP_LOAD_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_ChangePwd_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_INSERT_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_LOADDECODEDSINGLE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_LOADMULTI_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_LOADSINGLE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_utente_UPDATE_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_generic_DROP_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_generic_LOAD_interval_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_generic_LOAD_length_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_specific_CREATE_candidato_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_specific_CREATE_documento_SERVICE.cs" />
+    <Compile Include="Proxies\usp_ViewCacher_specific_CREATE_Primes_SERVICE.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{A8FD6DFC-3C34-4DB1-85E3-FB1BAA74A691}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="doc\20100708_ITBZOW1071_cvDb_scripts_.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="doc\20100709_ITBZOW1071_cvDb_scripts_.txt" />
+    <Content Include="doc\20100722_ITBZOW1071_cvDb_scripts_.txt" />
+    <Content Include="doc\cvDb_20141110_.txt" />
+    <Content Include="doc\Localization.aspx.htm" />
+    <Content Include="doc\Localization_west_wind_.htm" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
