@@ -3,13 +3,13 @@
      style="background-color:#CCFFFF; position:relative; width:270px; left: 4px; top: 4px; border-color:Black; border:solid thin black">
         <br />
         <!-- usr-->
-            <asp:Label ID="lblUser" runat="server"  Height="15px"  Width="70px" Style="position: relative">&nbsp;Username</asp:Label>
+            <asp:Label ID="lblUser" runat="server"  Height="15px"  Width="90px" Style="position: relative">&nbsp;Username</asp:Label>
             <asp:TextBox ID="txtUser" runat="server" Height="15px"  Width="150px" 
             TabIndex="1"></asp:TextBox>
         <!-- end usr -->
         <br />
         <!-- pwd-->
-            <asp:Label ID="lblPwd" runat="server"  Height="15px"   Width="70px" Style="position: relative" >&nbsp;Password</asp:Label>
+            <asp:Label ID="lblPwd" runat="server"  Height="15px"   Width="90px" Style="position: relative" >&nbsp;Password</asp:Label>
             <asp:TextBox ID="txtPwd" runat="server" Height="15px"  Width="150px" 
             TextMode="Password" TabIndex="2" ></asp:TextBox>
         <!-- end pwd -->
