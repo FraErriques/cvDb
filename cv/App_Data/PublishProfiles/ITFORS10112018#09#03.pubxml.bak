@@ -20,6 +20,6 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <UserName>fra</UserName>
     <_SavePWD>false</_SavePWD>
     <ADUsesOwinOrOpenIdConnect>False</ADUsesOwinOrOpenIdConnect>
-    <EnableMsDeployAppOffline>true</EnableMsDeployAppOffline>
+    <EnableMsDeployAppOffline>false</EnableMsDeployAppOffline>
   </PropertyGroup>
 </Project>

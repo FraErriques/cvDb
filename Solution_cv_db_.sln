@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{A8FD6DFC-3C34-4DB1-85E3-FB1BAA74A691}"
 EndProject
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Process", "Process\Process.
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "cv", "cv\", "{E8D32D73-9B5C-4D8A-A89C-533AC56F00A1}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
 		ProjectReferences = "{a8fd6dfc-3c34-4db1-85e3-fb1baa74a691}|Common.dll;{1e055241-3b57-4d0f-8e24-3f2278c59993}|Entity.dll;{56176f4f-d105-4c38-8a77-369c57bcb956}|Process.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/Bin"
 		Debug.AspNetCompiler.PhysicalPath = "cv\"
