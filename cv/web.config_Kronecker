@@ -96,8 +96,8 @@
       <add key="kkkey_key" value="0" />
       <add key="vkkey_key" value="0" />
       <!-- active one -->
-      <add key="cv_db_app" value="Database=cv_db;Server=Beta11\Jacobi;User=appuser;Password=curricula;" />
-      <!-- <add key="cv_db_app" value="Database=cv_db;Server=Kronecker\Delta;User=applicationuser;Password=curricula;"/> -->
+      <!-- <add key="cv_db_app" value="Database=cv_db;Server=Beta11\Jacobi;User=appuser;Password=curricula;" /> -->
+      <add key="cv_db_app" value="Database=cv_db;Server=Kronecker\Delta;User=applicationuser;Password=curricula;"/> 
     </strings>
   </ProxyGeneratorConnections>
   <LogSinkFs>
@@ -118,9 +118,9 @@
       <!--  Beta11\Jacobi connection -->
       <add key="kkkey_key" value="0" />
       <add key="vkkey_key" value="0" />
-      <add key="hostname_sql_instance" value="Beta11\Jacobi" />
+      <!-- <add key="hostname_sql_instance" value="Beta11\Jacobi" /> -->
       <!--  Kronecker\Delta connection -->
-      <!-- <add key="hostname_sql_instance" value="Kronecker\Delta"/> -->	  
+      <add key="hostname_sql_instance" value="Kronecker\Delta"/>
       <add key="db_name" value="Logging" />
       <add key="sql_instance" value="Jacobi" />
 	  <!-- <add key="sql_instance" value="Delta"/> -->
@@ -130,8 +130,8 @@
     </connection>
     <logger_application>
       <!-- each application logs on its own table -->
-      <add key="table_name" value="cv_db" />
-	  <!-- <add key="table_name" value="cvDb_Kronecker"/> -->
+      <!-- <add key="table_name" value="cv_db" /> -->
+	  <add key="table_name" value="cvDb_Kronecker"/>
       <add key="semaphore" value="on" />
       <add key="verbosity" value="0" />
     </logger_application>
